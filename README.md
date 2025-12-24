@@ -1,73 +1,48 @@
-# React + TypeScript + Vite
+# 🎮 Financial Life Simulator
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+An interactive financial education game built with React, TypeScript, and modern web technologies.
 
-Currently, two official plugins are available:
+## 🚀 Current Status: Foundation Complete
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+✅ **Core Architecture Implemented**
+- Complete TypeScript type system for game entities
+- Zustand store with persistent game state
+- Modular constants system for game balance
 
-## React Compiler
+✅ **Game Systems Ready**
+- Player progression with career levels
+- Investment system (stocks, crypto, real estate, education)
+- Random events with probabilities and choices
+- Portfolio management with profit/loss tracking
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 🛠 Tech Stack
 
-## Expanding the ESLint configuration
+- **Frontend:** React 18, TypeScript, Vite
+- **State Management:** Zustand + Immer
+- **Styling:** Tailwind CSS
+- **Persistence:** localStorage
+- **Utilities:** date-fns, nanoid
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 🎯 Next Steps
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+1. **UI Components** - Build reusable game components
+2. **Game Interface** - Create main game dashboard
+3. **Visualization** - Add charts for financial progress
+4. **Game Balance** - Tune difficulty and progression
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## 🚦 Getting Started
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+npm install
+npm run dev
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 📝 Commit Style
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+feat: New features
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+fix: Bug fixes
+
+docs: Documentation
+
+refactor: Code restructuring
+
+chore: Maintenance tasks
