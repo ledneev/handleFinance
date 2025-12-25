@@ -1,6 +1,6 @@
 import { TestGameStore } from './TestGameStore'
+import { TestUIStore } from './testUIStore'
 import './App.css'
-import './index.css'
 
 function App() {
   return (
@@ -8,11 +8,11 @@ function App() {
       <h1 className="text-3xl font-bold text-blue-600 mb-6">
         🎮 Financial Life Simulator
       </h1>
-      <p className="text-gray-600 mb-8">
-        Interactive financial education game. Manage your money, invest wisely, and grow your career!
-      </p>
       
-      <TestGameStore />
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <TestGameStore />
+        <TestUIStore />
+      </div>
     </div>
   )
 }
