@@ -113,6 +113,7 @@ export interface GameState {
   balance: number
   player: Player
   isGameActive: boolean
+  priceChanges: Record<string, number>
 
   // === Инвестиции ===
   portfolio: PortfolioItem[]

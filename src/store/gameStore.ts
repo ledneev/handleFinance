@@ -19,7 +19,7 @@ export const useGameStore = create<GameStore>()(
       balance: INITIAL_BALANCE,
       player: INITIAL_PLAYER,
       isGameActive: true,
-
+      priceChanges: {} as Record<string, number>,
       portfolio:[],
       availableAssets: INITIAL_ASSETS,
 
@@ -51,6 +51,11 @@ export const useGameStore = create<GameStore>()(
             asset.currentPrice * (1 + (asset.trend * 0.1) + (Math.random() - 0.5) * asset.volatility)
           )
         }))
+
+        const priceChanges: Record<string, number> = {}
+        state.availableAssets.forEach(asset => {
+          priceChanges[asset.id] = asset.trend * 10 + (Math.random() - 0.5) * 5
+        })
 
         const portfolioValue = state.portfolio.reduce((total, item) => {
           const asset = updatedAssets.find(a => a.id === item.assetId)
