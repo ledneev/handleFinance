@@ -1,4 +1,4 @@
-import { TestUIComponents } from './TestUIComponents'
+import { TestAssetCard } from './TestAssetCard'
 import './App.css'
 
 function App() {
@@ -10,15 +10,15 @@ function App() {
             🎮 Financial Life Simulator
           </h1>
           <p className="text-gray-600 dark:text-gray-400 mt-2">
-            UI Components Test - Building the foundation
+            AssetCard Component - Core game element
           </p>
         </header>
         
-        <TestUIComponents />
+        <TestAssetCard />
         
         <footer className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-800">
           <p className="text-sm text-gray-500 dark:text-gray-500 text-center">
-            UI Components are ready! Next: Game-specific components.
+            AssetCard ready! Next: StatusBar and game integration.
           </p>
         </footer>
       </div>
