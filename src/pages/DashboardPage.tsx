@@ -1,14 +1,22 @@
-import React, { useMemo } from 'react'
+// src/pages/DashboardPage.tsx
+import React, { useMemo, useState } from 'react'
 import { useGameStore } from '@/store'
 import { AssetCardConnected } from '@/components/game/AssetCard'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui'
 import { TrendingUp, Wallet, Calendar, Briefcase } from 'lucide-react'
 import { formatCurrency } from '@/utils'
+import { AssetFilter, AssetFilterType } from '@/components/game/AssetFilter'
 
 export const DashboardPage: React.FC = () => {
   const { currentYear, balance, player, portfolio, availableAssets, priceChanges } = useGameStore()
-
   
+  const [assetFilter, setAssetFilter] = useState<AssetFilterType>('all')
+
+  const filteredAssets = availableAssets.filter(asset => {
+    if (assetFilter === 'all') return true
+    return asset.type === assetFilter
+  })
+
   const portfolioValue = useMemo(() => {
     return portfolio.reduce((total, item) => {
       const asset = availableAssets.find(a => a.id === item.assetId)
@@ -20,7 +28,6 @@ export const DashboardPage: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Заголовок */}
       <div>
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
           Добро пожаловать, {player.name}!
@@ -30,7 +37,6 @@ export const DashboardPage: React.FC = () => {
         </p>
       </div>
 
-      {/* Быстрая статистика */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
           <CardContent className="pt-6">
@@ -89,20 +95,36 @@ export const DashboardPage: React.FC = () => {
         </Card>
       </div>
 
-      {/* Доступные активы */}
       <Card>
         <CardHeader>
-          <CardTitle>📈 Доступные активы</CardTitle>
+          <CardTitle className="flex items-center justify-between">
+            <span>📈 Доступные активы</span>
+            {/* 🔹 Фильтр */}
+            <div className="hidden md:block">
+              <AssetFilter activeFilter={assetFilter} onFilterChange={setAssetFilter} />
+            </div>
+          </CardTitle>
         </CardHeader>
+
+        <div className="md:hidden px-6 pt-4">
+          <AssetFilter activeFilter={assetFilter} onFilterChange={setAssetFilter} />
+        </div>
+
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {availableAssets.slice(0, 6).map(asset => (
-              <AssetCardConnected
-                key={asset.id}
-                assetId={asset.id}
-                priceChange={priceChanges[asset.id] || asset.trend * 10}
-              />
-            ))}
+            {filteredAssets.length > 0 ? (
+              filteredAssets.map(asset => (
+                <AssetCardConnected
+                  key={asset.id}
+                  assetId={asset.id}
+                  priceChange={priceChanges[asset.id] || asset.trend * 10}
+                />
+              ))
+            ) : (
+              <div className="col-span-full text-center py-8 text-gray-500 dark:text-gray-400">
+                Активы не найдены по выбранному фильтру
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>

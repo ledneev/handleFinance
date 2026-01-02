@@ -4,7 +4,7 @@
 export type CareerLevel = 'intern' | 'junior' | 'middle' | 'senior' | 'lead' | 'director'
 
 //типы активов
-export type AssetType = 'stock' | 'crypto' | 'real_estate' | 'education' | 'bank'
+export type AssetType = 'stock' | 'crypto' | 'real_estate' | 'education' | 'bank' | 'consumable'
 
 //типы событий
 export type EventType = 'positive' | 'negative' | 'neutral' | 'crisis' | 'opportunity'
@@ -35,6 +35,16 @@ export interface Player {
  * Актив - во что можно инвестировать
  */
 
+export interface AssetEffects {
+  skillBonus?: {
+    programming?: number
+    finance?: number
+    luck?: number
+  }
+  careerBoost?: number
+  immediateEffect?: boolean
+}
+
 export interface Asset {
   id: string
   name: string
@@ -43,11 +53,13 @@ export interface Asset {
   volatility: number
   trend: number
   description: string
-  category: string
+  category?: string
   dividendYield?: number
   rentalYield?: number
-  skillBonus?: number
   interestRate?: number
+  skillBonus?: number //(старое поле для обратной совместимости)
+  effects?: AssetEffects
+  isConsumable?: boolean
 }
 
 /**

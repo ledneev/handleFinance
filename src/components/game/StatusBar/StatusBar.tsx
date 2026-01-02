@@ -3,25 +3,10 @@ import { useGameMetrics } from './useGameMetrics';
 import { StatusBarItem } from './StatusBarItem';
 import { ProgressBar } from './ProgressBar';
 import { Button } from '@/components/ui/Button';
-import { Calendar, Wallet, TrendingUp, Briefcase, ChevronRight, MoreVertical } from 'lucide-react';
+import { Calendar, Wallet, TrendingUp, Briefcase, ChevronRight} from 'lucide-react';
 import { formatCurrency } from '@/utils/formatters';
 import { notify } from '@/store/uiStore';
-
-// Компонент для мобильного меню (заглушка)
-const MobileMenuButton = () => {
-  return (
-    <button
-      className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
-      aria-label="Меню"
-      onClick={() => {
-        // В будущем — открытие мобильной панели
-        notify.info('Меню', 'Мобильное меню пока не реализовано');
-      }}
-    >
-      <MoreVertical className="w-5 h-5" />
-    </button>
-  );
-};
+import { MobileMenuButton } from './MobileMenuButton';
 
 export const StatusBar: React.FC = () => {
   const {
@@ -65,12 +50,12 @@ export const StatusBar: React.FC = () => {
       flex items-center justify-between flex-wrap gap-2
       transition-colors duration-200
     `}>
+
       {/* Логотип */}
       <div className="flex items-center gap-4 min-w-0 flex-shrink-0">
         <span className="font-bold text-lg text-blue-600 dark:text-blue-400">FinSim</span>
       </div>
-
-      {/* Основные метрики — видны на десктопе и планшетах */}
+      
       <div className="hidden md:flex items-center gap-2 flex-wrap flex-1 min-w-0">
         <StatusBarItem
           icon={<Calendar className="w-4 h-4" />}
@@ -106,7 +91,7 @@ export const StatusBar: React.FC = () => {
       </div>
 
       {/* Адаптив: иконка меню на мобильных */}
-      <div className="flex md:hidden">
+      <div className="flex lg:hidden">
         <MobileMenuButton />
       </div>
 

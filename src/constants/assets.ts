@@ -24,8 +24,7 @@ export const INITIAL_ASSETS: Asset[] = [
     volatility: 0.8,
     trend: 0.1,
     description: 'Криптовалюта с высокой волатильностью. Высокий риск, высокая потенциальная доходность.',
-    category: 'crypto',
-    dividendYield: 0
+    category: 'crypto'
   },
   {
     id: 'real-estate-moscow',
@@ -41,13 +40,18 @@ export const INITIAL_ASSETS: Asset[] = [
   {
     id: 'online-courses',
     name: 'Онлайн-курсы',
-    type: 'education',
+    type: 'consumable', // Меняем на consumable
     currentPrice: 100000,
     volatility: 0.1,
     trend: 0.9,
     description: 'Инвестиция в себя. Повышает навыки программирования, ускоряет карьерный рост.',
     category: 'education',
-    skillBonus: 15
+    effects: {
+      skillBonus: { programming: 15 },
+      careerBoost: 0.3,
+      immediateEffect: true
+    },
+    isConsumable: true
   },
   {
     id: 'bank-deposit',
@@ -68,8 +72,7 @@ export const INITIAL_ASSETS: Asset[] = [
     volatility: 0.5,
     trend: 0.4,
     description: 'Акции инновационной компании. Высокая волатильность, высокий потенциал роста.',
-    category: 'tech',
-    dividendYield: 0
+    category: 'tech'
   },
   {
     id: 'ethereum',
@@ -79,8 +82,22 @@ export const INITIAL_ASSETS: Asset[] = [
     volatility: 0.7,
     trend: 0.25,
     description: 'Вторая по капитализации криптовалюта. Платформа для смарт-контрактов.',
-    category: 'crypto',
-    dividendYield: 0
+    category: 'crypto'
+  },
+  {
+    id: 'finance-courses',
+    name: 'Курсы по финансам',
+    type: 'consumable',
+    currentPrice: 75000,
+    volatility: 0.05,
+    trend: 0.8,
+    description: 'Изучение основ инвестирования и управления финансами.',
+    category: 'education',
+    effects: {
+      skillBonus: { finance: 20 },
+      immediateEffect: true
+    },
+    isConsumable: true
   }
 ]
 
