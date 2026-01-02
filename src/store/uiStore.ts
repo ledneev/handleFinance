@@ -53,7 +53,7 @@ interface UIState {
   
   // === Sidebar/панели ===
   isSidebarOpen: boolean
-  activeView: 'dashboard' | 'invest' | 'career' | 'history' | 'portfolio'
+  activeView: 'dashboard' | 'invest' | 'career' | 'history'
 }
 
 interface UIActions {
