@@ -1,21 +1,31 @@
-import React from 'react'
-import { useGameStore } from '@/store'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui'
-import { 
-  TrendingUp, 
-  TrendingDown, 
-  Calendar, 
+import React from 'react';
+import { useGameStore } from '@/store';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui';
+import {
+  TrendingUp,
+  TrendingDown,
+  Calendar,
   DollarSign,
   Briefcase,
   BarChart3,
   ArrowUpRight,
-  ArrowDownRight
-} from 'lucide-react'
-import { formatCurrency, formatPercent } from '@/utils'
+  ArrowDownRight,
+} from 'lucide-react';
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from 'recharts';
+import { formatCurrency, formatPercent } from '@/utils';
 
 export const HistoryPage: React.FC = () => {
-  const { history, currentYear } = useGameStore()
-  
+  const { history, currentYear } = useGameStore();
+
   if (history.length === 0) {
     return (
       <div className="text-center py-12">
@@ -27,35 +37,35 @@ export const HistoryPage: React.FC = () => {
           Начните играть, и здесь появятся записи о ваших достижениях
         </p>
       </div>
-    )
+    );
   }
 
-  const totalYears = history.length
-  const firstYear = history[0]
-  const lastYear = history[history.length - 1]
-  
-  const totalBalanceGrowth = lastYear.balance - firstYear.balance
-  const totalNetWorthGrowth = lastYear.netWorth - firstYear.netWorth
-  const avgSalaryGrowth = history.reduce((sum, year, index, array) => {
-    if (index === 0) return 0
-    return sum + (year.salary - array[index - 1].salary)
-  }, 0) / (totalYears - 1)
-  
+  const totalYears = history.length;
+  const firstYear = history[0];
+  const lastYear = history[history.length - 1];
+
+  const totalBalanceGrowth = lastYear.balance - firstYear.balance;
+  const totalNetWorthGrowth = lastYear.netWorth - firstYear.netWorth;
+  const avgSalaryGrowth =
+    history.reduce((sum, year, index, array) => {
+      if (index === 0) return 0;
+      return sum + (year.salary - array[index - 1].salary);
+    }, 0) /
+    (totalYears - 1);
+
   // Подготавливаем данные для графика (упрощенный вид)
-  const chartData = history.map((year) => ({
+  const chartData = history.map(year => ({
     year: year.year,
     balance: year.balance,
     netWorth: year.netWorth,
     salary: year.salary,
-    isCurrent: year.year === currentYear
-  }))
+    isCurrent: year.year === currentYear,
+  }));
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-          📜 История игры
-        </h1>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">📜 История игры</h1>
         <p className="text-gray-600 dark:text-gray-400 mt-2">
           Анализ вашего финансового прогресса по годам
         </p>
@@ -86,11 +96,13 @@ export const HistoryPage: React.FC = () => {
               </div>
               <div>
                 <div className="text-sm text-gray-500 dark:text-gray-400">Рост баланса</div>
-                <div className={`text-2xl font-bold ${totalBalanceGrowth >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                <div
+                  className={`text-2xl font-bold ${totalBalanceGrowth >= 0 ? 'text-green-600' : 'text-red-600'}`}
+                >
                   {formatCurrency(totalBalanceGrowth)}
                 </div>
                 <div className="text-sm text-gray-500 dark:text-gray-400">
-                  {totalBalanceGrowth >= 0 ? '📈' : '📉'} 
+                  {totalBalanceGrowth >= 0 ? '📈' : '📉'}
                   {formatPercent((totalBalanceGrowth / firstYear.balance) * 100)}
                 </div>
               </div>
@@ -106,11 +118,13 @@ export const HistoryPage: React.FC = () => {
               </div>
               <div>
                 <div className="text-sm text-gray-500 dark:text-gray-400">Рост капитала</div>
-                <div className={`text-2xl font-bold ${totalNetWorthGrowth >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                <div
+                  className={`text-2xl font-bold ${totalNetWorthGrowth >= 0 ? 'text-green-600' : 'text-red-600'}`}
+                >
                   {formatCurrency(totalNetWorthGrowth)}
                 </div>
                 <div className="text-sm text-gray-500 dark:text-gray-400">
-                  {totalNetWorthGrowth >= 0 ? '📈' : '📉'} 
+                  {totalNetWorthGrowth >= 0 ? '📈' : '📉'}
                   {formatPercent((totalNetWorthGrowth / firstYear.netWorth) * 100)}
                 </div>
               </div>
@@ -125,13 +139,15 @@ export const HistoryPage: React.FC = () => {
                 <Briefcase className="h-6 w-6 text-yellow-600 dark:text-yellow-400" />
               </div>
               <div>
-                <div className="text-sm text-gray-500 dark:text-gray-400">Средний рост зарплаты</div>
-                <div className={`text-2xl font-bold ${avgSalaryGrowth >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                <div className="text-sm text-gray-500 dark:text-gray-400">
+                  Средний рост зарплаты
+                </div>
+                <div
+                  className={`text-2xl font-bold ${avgSalaryGrowth >= 0 ? 'text-green-600' : 'text-red-600'}`}
+                >
                   {formatCurrency(avgSalaryGrowth)}
                 </div>
-                <div className="text-sm text-gray-500 dark:text-gray-400">
-                  в год
-                </div>
+                <div className="text-sm text-gray-500 dark:text-gray-400">в год</div>
               </div>
             </div>
           </CardContent>
@@ -150,22 +166,34 @@ export const HistoryPage: React.FC = () => {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-gray-200 dark:border-gray-700">
-                  <th className="text-left py-3 px-4 font-semibold text-gray-700 dark:text-gray-300">Год</th>
-                  <th className="text-left py-3 px-4 font-semibold text-gray-700 dark:text-gray-300">Баланс</th>
-                  <th className="text-left py-3 px-4 font-semibold text-gray-700 dark:text-gray-300">Капитал</th>
-                  <th className="text-left py-3 px-4 font-semibold text-gray-700 dark:text-gray-300">Зарплата</th>
-                  <th className="text-left py-3 px-4 font-semibold text-gray-700 dark:text-gray-300">Изменение</th>
-                  <th className="text-left py-3 px-4 font-semibold text-gray-700 dark:text-gray-300">События</th>
+                  <th className="text-left py-3 px-4 font-semibold text-gray-700 dark:text-gray-300">
+                    Год
+                  </th>
+                  <th className="text-left py-3 px-4 font-semibold text-gray-700 dark:text-gray-300">
+                    Баланс
+                  </th>
+                  <th className="text-left py-3 px-4 font-semibold text-gray-700 dark:text-gray-300">
+                    Капитал
+                  </th>
+                  <th className="text-left py-3 px-4 font-semibold text-gray-700 dark:text-gray-300">
+                    Зарплата
+                  </th>
+                  <th className="text-left py-3 px-4 font-semibold text-gray-700 dark:text-gray-300">
+                    Изменение
+                  </th>
+                  <th className="text-left py-3 px-4 font-semibold text-gray-700 dark:text-gray-300">
+                    События
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {chartData.map((item, index) => {
-                  const prevItem = index > 0 ? chartData[index - 1] : null
-                  const balanceChange = prevItem ? item.balance - prevItem.balance : 0
-                  const netWorthChange = prevItem ? item.netWorth - prevItem.netWorth : 0
-                  
+                  const prevItem = index > 0 ? chartData[index - 1] : null;
+                  const balanceChange = prevItem ? item.balance - prevItem.balance : 0;
+                  const netWorthChange = prevItem ? item.netWorth - prevItem.netWorth : 0;
+
                   return (
-                    <tr 
+                    <tr
                       key={item.year}
                       className={`
                         border-b border-gray-100 dark:border-gray-800 
@@ -184,46 +212,70 @@ export const HistoryPage: React.FC = () => {
                           )}
                         </div>
                       </td>
-                      
+
                       <td className="py-3 px-4">
                         <div className="font-medium">{formatCurrency(item.balance)}</div>
                         {index > 0 && (
-                          <div className={`text-xs flex items-center gap-1 ${balanceChange >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                            {balanceChange >= 0 ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
+                          <div
+                            className={`text-xs flex items-center gap-1 ${balanceChange >= 0 ? 'text-green-500' : 'text-red-500'}`}
+                          >
+                            {balanceChange >= 0 ? (
+                              <ArrowUpRight className="h-3 w-3" />
+                            ) : (
+                              <ArrowDownRight className="h-3 w-3" />
+                            )}
                             {formatCurrency(Math.abs(balanceChange))}
                           </div>
                         )}
                       </td>
-                      
+
                       <td className="py-3 px-4">
                         <div className="font-medium">{formatCurrency(item.netWorth)}</div>
                         {index > 0 && (
-                          <div className={`text-xs flex items-center gap-1 ${netWorthChange >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                            {netWorthChange >= 0 ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
+                          <div
+                            className={`text-xs flex items-center gap-1 ${netWorthChange >= 0 ? 'text-green-500' : 'text-red-500'}`}
+                          >
+                            {netWorthChange >= 0 ? (
+                              <ArrowUpRight className="h-3 w-3" />
+                            ) : (
+                              <ArrowDownRight className="h-3 w-3" />
+                            )}
                             {formatCurrency(Math.abs(netWorthChange))}
                           </div>
                         )}
                       </td>
-                      
+
                       <td className="py-3 px-4">
                         <div className="font-medium">{formatCurrency(item.salary)}/мес</div>
                         {index > 0 && prevItem && (
                           <div className="text-xs text-gray-500">
-                            {item.salary > prevItem.salary ? '↑' : item.salary < prevItem.salary ? '↓' : '→'} 
+                            {item.salary > prevItem.salary
+                              ? '↑'
+                              : item.salary < prevItem.salary
+                                ? '↓'
+                                : '→'}
                             {formatCurrency(Math.abs(item.salary - prevItem.salary))}
                           </div>
                         )}
                       </td>
-                      
+
                       <td className="py-3 px-4">
                         {index > 0 && (
-                          <div className={`flex items-center gap-1 ${netWorthChange >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                            {netWorthChange >= 0 ? <TrendingUp className="h-4 w-4" /> : <TrendingDown className="h-4 w-4" />}
-                            <span>{formatPercent((netWorthChange / prevItem!.netWorth) * 100)}</span>
+                          <div
+                            className={`flex items-center gap-1 ${netWorthChange >= 0 ? 'text-green-500' : 'text-red-500'}`}
+                          >
+                            {netWorthChange >= 0 ? (
+                              <TrendingUp className="h-4 w-4" />
+                            ) : (
+                              <TrendingDown className="h-4 w-4" />
+                            )}
+                            <span>
+                              {formatPercent((netWorthChange / prevItem!.netWorth) * 100)}
+                            </span>
                           </div>
                         )}
                       </td>
-                      
+
                       <td className="py-3 px-4">
                         <div className="text-sm text-gray-600 dark:text-gray-400 max-w-xs">
                           {history[index]?.majorEvents.slice(0, 2).map((event, i) => (
@@ -239,7 +291,7 @@ export const HistoryPage: React.FC = () => {
                         </div>
                       </td>
                     </tr>
-                  )
+                  );
                 })}
               </tbody>
             </table>
@@ -251,29 +303,42 @@ export const HistoryPage: React.FC = () => {
         <Card>
           <CardHeader>
             <CardTitle>📈 Динамика баланса</CardTitle>
-            <CardDescription>
-              Изменение наличных средств по годам
-            </CardDescription>
+            <CardDescription>Изменение наличных средств по годам</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="h-64 flex items-end gap-1">
-              {chartData.map((item) => {
-                const maxBalance = Math.max(...chartData.map(d => d.balance))
-                const height = (item.balance / maxBalance) * 100
-                
-                return (
-                  <div key={item.year} className="flex-1 flex flex-col items-center">
-                    <div 
-                      className={`w-8 rounded-t transition-all duration-500 ${item.isCurrent ? 'bg-blue-500' : 'bg-green-500'}`}
-                      style={{ height: `${Math.max(10, height)}%` }}
-                      title={`${item.year}: ${formatCurrency(item.balance)}`}
-                    />
-                    <div className="text-xs text-gray-500 mt-2">
-                      {item.year}
-                    </div>
-                  </div>
-                )
-              })}
+            <div className="h-64 sm:h-72 md:h-80">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={chartData} margin={{ top: 5, right: 30, left: 40, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
+                  <XAxis dataKey="year" tick={{ fill: '#6B7280', fontSize: 12 }} />
+                  <YAxis
+                    width={38}
+                    tickFormatter={value => formatCurrency(value)}
+                    tick={{ fill: '#6B7280', fontSize: 12 }}
+                    tickLine={false}
+                    domain={['dataMin', 'dataMax']}
+                  />
+                  <Tooltip
+                    labelFormatter={value => `${value} год`}
+                    formatter={(value, name) => {
+                      if (typeof value !== 'number') return ['', name];
+                      const roundedValue = Math.round(value);
+                      if (name === 'balance') return [formatCurrency(roundedValue), 'Баланс'];
+                      return [formatCurrency(roundedValue), name];
+                    }}
+                  />
+                  <Legend />
+                  <Line
+                    type="monotone"
+                    dataKey="balance"
+                    name="Баланс"
+                    stroke="#3b82f6"
+                    strokeWidth={3}
+                    dot={{ r: 4 }}
+                    activeDot={{ r: 6 }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
             </div>
           </CardContent>
         </Card>
@@ -281,29 +346,43 @@ export const HistoryPage: React.FC = () => {
         <Card>
           <CardHeader>
             <CardTitle>🏦 Динамика капитала</CardTitle>
-            <CardDescription>
-              Изменение чистого капитала (баланс + активы)
-            </CardDescription>
+            <CardDescription>Изменение чистого капитала (баланс + активы)</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="h-64 flex items-end gap-1">
-              {chartData.map((item) => {
-                const maxNetWorth = Math.max(...chartData.map(d => d.netWorth))
-                const height = (item.netWorth / maxNetWorth) * 100
-                
-                return (
-                  <div key={item.year} className="flex-1 flex flex-col items-center">
-                    <div 
-                      className={`w-8 rounded-t transition-all duration-500 ${item.isCurrent ? 'bg-purple-500' : 'bg-indigo-500'}`}
-                      style={{ height: `${Math.max(10, height)}%` }}
-                      title={`${item.year}: ${formatCurrency(item.netWorth)}`}
-                    />
-                    <div className="text-xs text-gray-500 mt-2">
-                      {item.year}
-                    </div>
-                  </div>
-                )
-              })}
+            <div className="h-64 sm:h-72 md:h-80">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
+                  <XAxis dataKey="year" tick={{ fill: '#6B7280', fontSize: 12 }} />
+                  <YAxis
+                    width={60}
+                    tickFormatter={value => formatCurrency(value)}
+                    tick={{ fill: '#6B7280', fontSize: 12 }}
+                    tickLine={false}
+                    domain={['dataMin', 'dataMax']}
+                  />
+                  <Tooltip
+                    labelFormatter={value => `${value} год`}
+                    formatter={(value, name) => {
+                      if (typeof value !== 'number') return ['', name];
+                      const roundedValue = Math.round(value);
+                      if (name === 'netWorth')
+                        return [formatCurrency(roundedValue), 'Чистый капитал'];
+                      return [formatCurrency(roundedValue), name];
+                    }}
+                  />
+                  <Legend />
+                  <Line
+                    type="monotone"
+                    dataKey="netWorth"
+                    name="Чистый капитал"
+                    stroke="#10b981"
+                    strokeWidth={3}
+                    dot={{ fill: '#10b981', r: 4 }}
+                    activeDot={{ r: 6 }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
             </div>
           </CardContent>
         </Card>
@@ -320,9 +399,12 @@ export const HistoryPage: React.FC = () => {
                 <div className="flex items-center gap-3">
                   <TrendingUp className="h-6 w-6 text-green-600 dark:text-green-400" />
                   <div>
-                    <h4 className="font-semibold text-green-800 dark:text-green-300">Отличный прогресс!</h4>
+                    <h4 className="font-semibold text-green-800 dark:text-green-300">
+                      Отличный прогресс!
+                    </h4>
                     <p className="text-green-700 dark:text-green-400 mt-1">
-                      Ваш капитал вырос на {formatPercent((totalNetWorthGrowth / firstYear.netWorth) * 100)} 
+                      Ваш капитал вырос на{' '}
+                      {formatPercent((totalNetWorthGrowth / firstYear.netWorth) * 100)}
                       за {totalYears} лет. Продолжайте в том же духе!
                     </p>
                   </div>
@@ -333,9 +415,11 @@ export const HistoryPage: React.FC = () => {
                 <div className="flex items-center gap-3">
                   <BarChart3 className="h-6 w-6 text-yellow-600 dark:text-yellow-400" />
                   <div>
-                    <h4 className="font-semibold text-yellow-800 dark:text-yellow-300">Есть куда расти</h4>
+                    <h4 className="font-semibold text-yellow-800 dark:text-yellow-300">
+                      Есть куда расти
+                    </h4>
                     <p className="text-yellow-700 dark:text-yellow-400 mt-1">
-                      Ваш капитал не показал значительного роста. Попробуйте более агрессивные 
+                      Ваш капитал не показал значительного роста. Попробуйте более агрессивные
                       стратегии инвестирования или фокусируйтесь на карьерном росте.
                     </p>
                   </div>
@@ -345,14 +429,16 @@ export const HistoryPage: React.FC = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                <h4 className="font-semibold text-blue-800 dark:text-blue-300 mb-2">Рекомендации</h4>
+                <h4 className="font-semibold text-blue-800 dark:text-blue-300 mb-2">
+                  Рекомендации
+                </h4>
                 <ul className="space-y-2 text-sm text-blue-700 dark:text-blue-400">
                   <li>• Диверсифицируйте портфель для снижения рисков</li>
                   <li>• Реинвестируйте доходы для ускорения роста</li>
                   <li>• Следите за инфляцией при долгосрочном планировании</li>
                 </ul>
               </div>
-              
+
               <div className="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
                 <h4 className="font-semibold text-gray-800 dark:text-gray-300 mb-2">Что дальше?</h4>
                 <ul className="space-y-2 text-sm text-gray-700 dark:text-gray-400">
@@ -366,5 +452,5 @@ export const HistoryPage: React.FC = () => {
         </CardContent>
       </Card>
     </div>
-  )
-}
+  );
+};
