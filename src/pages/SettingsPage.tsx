@@ -1,39 +1,30 @@
-import React from 'react'
-import { useGameStore, useUIStore } from '@/store'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui'
-import { Button } from '@/components/ui'
-import { 
-  Moon, 
-  Sun, 
-  Bell, 
-  RotateCcw,
-  Trash2
-} from 'lucide-react'
+import React from 'react';
+import { useGameStore, useUIStore } from '@/store';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui';
+import { Button } from '@/components/ui';
+import { Moon, Sun, Bell, RotateCcw, Trash2 } from 'lucide-react';
 
 export const SettingsPage: React.FC = () => {
-  const { theme, toggleTheme, setTheme, clearNotifications } = useUIStore()
-  const { resetGame } = useGameStore() // Добавь этот импорт если нужно
+  const { theme, toggleTheme, setTheme, clearNotifications } = useUIStore();
+  const { resetGame } = useGameStore();
 
   const handleResetGame = () => {
     if (window.confirm('Вы уверены? Это удалит весь прогресс и начнет игру заново.')) {
-      resetGame()
-      // Можно добавить уведомление
+      resetGame();
     }
-  }
+  };
 
   const handleClearData = () => {
     if (window.confirm('ВНИМАНИЕ: Это удалит все сохраненные данные. Действие необратимо.')) {
-      localStorage.clear()
-      window.location.reload()
+      localStorage.clear();
+      window.location.reload();
     }
-  }
+  };
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-          ⚙️ Настройки
-        </h1>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">⚙️ Настройки</h1>
         <p className="text-gray-600 dark:text-gray-400 mt-2">
           Настройте игру под свои предпочтения
         </p>
@@ -42,9 +33,7 @@ export const SettingsPage: React.FC = () => {
       <Card>
         <CardHeader>
           <CardTitle>🎨 Внешний вид</CardTitle>
-          <CardDescription>
-            Настройте тему и отображение игры
-          </CardDescription>
+          <CardDescription>Настройте тему и отображение игры</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
@@ -96,8 +85,7 @@ export const SettingsPage: React.FC = () => {
       <Card>
         <CardHeader>
           <CardTitle>🔔 Уведомления</CardTitle>
-          <CardDescription>
-          </CardDescription>
+          <CardDescription></CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
@@ -122,14 +110,14 @@ export const SettingsPage: React.FC = () => {
       <Card>
         <CardHeader>
           <CardTitle>🎮 Управление игрой</CardTitle>
-          <CardDescription>
-            Опасные действия - будьте осторожны
-          </CardDescription>
+          <CardDescription>Опасные действия - будьте осторожны</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
             <div>
-              <h4 className="font-medium text-yellow-800 dark:text-yellow-300">Начать игру заново</h4>
+              <h4 className="font-medium text-yellow-800 dark:text-yellow-300">
+                Начать игру заново
+              </h4>
               <p className="text-sm text-yellow-700 dark:text-yellow-400">
                 Сбросить весь прогресс и начать с начала
               </p>
@@ -181,9 +169,37 @@ export const SettingsPage: React.FC = () => {
               <h4 className="font-medium text-gray-900 dark:text-white mb-1">Сброс настроек</h4>
               <p>Для полного сброса очистите кэш браузера или используйте кнопку выше.</p>
             </div>
+            <div>
+              <h4 className="font-medium text-gray-900 dark:text-white mb-1">
+                Правовая информация
+              </h4>
+              <ul className="space-y-1 list-disc list-inside">
+                <li>
+                  Это <span className="font-medium">обучающая игра</span>, не являющаяся реальным
+                  инвестиционным сервисом.
+                </li>
+                <li>
+                  Все активы, рынки и доходы — <span className="font-medium">виртуальные</span> и не
+                  связаны с реальностью.
+                </li>
+                <li>
+                  Совпадения с реальными компаниями или событиями —{' '}
+                  <span className="font-medium">случайны</span>.
+                </li>
+                <li>
+                  Использование игры означает согласие с её{' '}
+                  <span className="font-medium">некоммерческим и образовательным характером</span>.
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h4 className='font-medium text-gray-900 dark:text-white mb-1'>
+                Проект является открытым, исходный код и документация доступны на <a className='text-blue-800' href="https://github.com/ledneev/handleFinance" target="_blank" rel="noopener noreferrer">GitHub</a>.
+              </h4>
+            </div>
           </div>
         </CardContent>
       </Card>
     </div>
-  )
-}
+  );
+};
