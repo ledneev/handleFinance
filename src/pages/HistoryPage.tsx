@@ -279,14 +279,24 @@ export const HistoryPage: React.FC = () => {
                       <td className="py-3 px-4">
                         <div className="text-sm text-gray-600 dark:text-gray-400 max-w-xs">
                           {history[index]?.majorEvents.slice(0, 2).map((event, i) => (
-                            <div key={i} className="truncate">
-                              • {event}
+                            <div key={i} className="mb-1">
+                              <span className="inline-block w-2 h-2 rounded-full bg-blue-500 mr-2" />
+                              {event}
                             </div>
                           ))}
                           {history[index]?.majorEvents.length > 2 && (
-                            <div className="text-xs text-gray-500">
-                              и ещё {history[index].majorEvents.length - 2} событий
-                            </div>
+                            <button
+                              onClick={() => {
+                                const allEvents = history[index].majorEvents;
+                                alert(`Все события ${item.year} года:\n\n${allEvents.join('\n')}`);
+                              }}
+                              className="text-xs text-blue-600 dark:text-blue-400 hover:underline mt-1"
+                            >
+                              и ещё {history[index].majorEvents.length - 2} событий...
+                            </button>
+                          )}
+                          {history[index]?.majorEvents.length === 0 && (
+                            <span className="text-gray-400">Нет значимых событий</span>
                           )}
                         </div>
                       </td>

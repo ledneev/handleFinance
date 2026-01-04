@@ -4,6 +4,7 @@ import { DashboardPage, PortfolioPage, CareerPage, HistoryPage } from '@/pages'
 import { EventModal } from '@/components/game/EventModal'
 import { useUIStore } from '@/store'
 import { SettingsPage } from '@/pages/SettingsPage'
+import { NotificationsPanel } from '@/components/game/NotificationsPanel'
 
 function App() {
   const { activeView } = useUIStore()
@@ -34,6 +35,7 @@ function App() {
       </GameLayout>
       
       <EventModal />
+       <NotificationsPanel />
     </>
   )
 }
