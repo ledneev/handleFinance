@@ -2,11 +2,13 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { nanoid } from 'nanoid';
 import type { GameStore } from '@/types/game.types';
+import { notify } from './uiStore';
 
 import { INITIAL_PLAYER, INITIAL_BALANCE, STARTING_YEAR } from '@/constants';
 import { INITIAL_ASSETS } from '@/constants/assets';
 import { getRandomEventTemplate } from '@/constants/event';
 import { CAREER_CONFIGS, CAREER_LEVELS } from '@/constants/careers';
+import { formatCurrency } from '@/utils';
 
 export const useGameStore = create<GameStore>()(
   persist(
@@ -117,14 +119,20 @@ export const useGameStore = create<GameStore>()(
         const asset = state.availableAssets.find(a => a.id === assetId);
 
         if (!asset) {
+          notify.error('Ошибка', 'Актив не найден');
           set({ eventLog: [...state.eventLog, '❌ Актив не найден'] });
           return;
         }
 
+        // --- 🔹 Покупка consumable (учебники, курсы и т.д.) ---
         if (asset.type === 'consumable' || asset.isConsumable) {
           const totalCost = asset.currentPrice * quantity;
 
           if (state.balance < totalCost) {
+            notify.error(
+              'Недостаточно средств',
+              `Для покупки ${asset.name} нужно: ${formatCurrency(totalCost)}`
+            );
             set({ eventLog: [...state.eventLog, '❌ Недостаточно средств для покупки'] });
             return;
           }
@@ -133,6 +141,7 @@ export const useGameStore = create<GameStore>()(
           const newSkills = { ...state.player.skills };
           const messages: string[] = [];
 
+          // Применяем бонусы по навыкам
           if (effects.skillBonus) {
             if (effects.skillBonus.programming) {
               const bonus = effects.skillBonus.programming * quantity;
@@ -150,6 +159,7 @@ export const useGameStore = create<GameStore>()(
               messages.push(`🍀 +${bonus} к удаче`);
             }
           } else if (asset.skillBonus) {
+            // Резервный вариант: если бонус прямо в asset
             const bonus = asset.skillBonus * quantity;
             newSkills.programming = Math.min(100, newSkills.programming + bonus);
             messages.push(`📚 +${bonus} к программированию`);
@@ -168,12 +178,22 @@ export const useGameStore = create<GameStore>()(
             ],
           });
 
+          // ✅ Уведомление
+          notify.success('Покупка', `Куплено: ${asset.name} ×${quantity}`);
+          if (messages.length > 0) {
+            notify.info('Навыки обновлены', messages.join(', '));
+          }
           return;
         }
 
+        // --- 🔹 Покупка инвестиционного актива (акции, недвижимость и т.д.) ---
         const totalCost = asset.currentPrice * quantity;
 
         if (state.balance < totalCost) {
+          notify.error(
+            'Недостаточно средств',
+            `Нужно: ${formatCurrency(totalCost)}, у вас: ${formatCurrency(state.balance)}`
+          );
           set({ eventLog: [...state.eventLog, '❌ Недостаточно средств для покупки'] });
           return;
         }
@@ -207,6 +227,9 @@ export const useGameStore = create<GameStore>()(
           portfolio: updatedPortfolio,
           eventLog: [...state.eventLog, `✅ Куплено ${quantity} ${asset.name}`],
         });
+
+        // ✅ Уведомление
+        notify.success('Покупка', `Куплено ${quantity} ${asset.name}`);
       },
 
       sellAsset: (assetId: string, quantity: number) => {
@@ -215,11 +238,16 @@ export const useGameStore = create<GameStore>()(
         const portfolioItem = state.portfolio.find(item => item.assetId === assetId);
 
         if (!asset || !portfolioItem) {
+          notify.error('Ошибка', 'Актив не найден в портфеле');
           set({ eventLog: [...state.eventLog, '❌ Актив не найден в портфеле'] });
           return;
         }
 
         if (portfolioItem.quantity < quantity) {
+          notify.error(
+            'Ошибка',
+            `Недостаточно активов. У вас: ${portfolioItem.quantity}, хотите продать: ${quantity}`
+          );
           set({ eventLog: [...state.eventLog, '❌ Недостаточно активов для продажи'] });
           return;
         }
@@ -230,10 +258,8 @@ export const useGameStore = create<GameStore>()(
         let updatedPortfolio: typeof state.portfolio;
 
         if (portfolioItem.quantity === quantity) {
-          // Продаем все
           updatedPortfolio = state.portfolio.filter(item => item.assetId !== assetId);
         } else {
-          // Продаем часть
           updatedPortfolio = state.portfolio.map(item =>
             item.assetId === assetId ? { ...item, quantity: item.quantity - quantity } : item
           );
@@ -246,10 +272,18 @@ export const useGameStore = create<GameStore>()(
             ...state.eventLog,
             `💰 Продано ${quantity} ${asset.name}`,
             profit > 0
-              ? `🎉 Прибыль: ${profit.toLocaleString()}₽`
-              : `📉 Убыток: ${Math.abs(profit).toLocaleString()}₽`,
+              ? `🎉 Прибыль: ${formatCurrency(profit)}`
+              : `📉 Убыток: ${formatCurrency(Math.abs(profit))}`,
           ],
         });
+
+        notify.success('Продажа', `Продано ${quantity} ${asset.name}`);
+        if (profit !== 0) {
+          notify[profit > 0 ? 'success' : 'warning'](
+            profit > 0 ? 'Прибыль' : 'Убыток',
+            `${profit > 0 ? '🎉' : '📉'} ${formatCurrency(Math.abs(profit))}`
+          );
+        }
       },
 
       upgradeCareer: () => {
@@ -257,6 +291,7 @@ export const useGameStore = create<GameStore>()(
         const currentIndex = CAREER_LEVELS.indexOf(state.player.career);
 
         if (currentIndex >= CAREER_LEVELS.length - 1) {
+          notify.info('Карьера', 'Вы достигли максимального уровня!');
           set({
             eventLog: [...state.eventLog, '🎖️ Вы уже достигли максимального уровня карьеры!'],
           });
@@ -267,6 +302,10 @@ export const useGameStore = create<GameStore>()(
         const nextConfig = CAREER_CONFIGS[nextLevel];
 
         if (state.balance < nextConfig.upgradeCost) {
+          notify.error(
+            'Недостаточно средств',
+            `Для повышения нужно: ${formatCurrency(nextConfig.upgradeCost)}`
+          );
           set({
             eventLog: [...state.eventLog, '❌ Недостаточно средств для повышения квалификации'],
           });
@@ -287,9 +326,11 @@ export const useGameStore = create<GameStore>()(
           eventLog: [
             ...state.eventLog,
             `🎓 Повышение до ${nextLevel}!`,
-            `💼 Новая зарплата: ${nextConfig.baseSalary.toLocaleString()}₽/мес`,
+            `💼 Новая зарплата: ${formatCurrency(nextConfig.baseSalary)}/мес`,
           ],
         });
+
+        notify.success('Повышение!', `Вы стали ${nextLevel} 🎉`);
       },
 
       triggerRandomEvent: () => {
