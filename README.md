@@ -1,5 +1,8 @@
 # 🎮 Financial Life Simulator
 
+## 🚀 Published version
+[![Vercel](https://img.shields.io/badge/-Play-222?style=for-the-badge&logo=github)](https://handlefinancebyledneev.vercel.app/)
+
 A dynamic, educational life simulation game where players manage their career, finances, investments, and life choices to achieve personal goals — all in a risk-free environment.
 
 Built with **React**, **TypeScript**, and **Zustand**, this simulator blends gamification with financial literacy, helping players understand real-world economic decisions through immersive gameplay.
@@ -48,7 +51,7 @@ Built with **React**, **TypeScript**, and **Zustand**, this simulator blends gam
 
 | Layer           | Technology               |
 |----------------|--------------------------|
-| **Framework**  | React 18, Vite           |
+| **Framework**  | React 19, Vite           |
 | **State**      | Zustand + Slices         |
 | **Types**      | TypeScript               |
 | **Styling**    | Tailwind CSS             |
@@ -88,27 +91,40 @@ Built with **React**, **TypeScript**, and **Zustand**, this simulator blends gam
 
 ## 🚦 Getting Started
 
-Clone and run locally:
+### Clone and run locally:
 
 git clone https://github.com/ledneev/handleFinance.git
+
 cd financial-simulator
+
 npm install
+
 npm run dev
+
 Open http://localhost:3000 and start your financial journey!
 
 📝 Commit Convention
+
 We follow conventional commits:
 
-feat: ... — New features
-fix: ... — Bug fixes
-docs: ... — Documentation updates
-refactor: ... — Code restructuring
-chore: ... — Maintenance tasks
-style: ... — Formatting, no logic changes
-test: ... — Adding or correcting tests
+feat: ... --- New features
+
+fix: ... --- Bug fixes
+
+docs: ... --- Documentation updates
+
+refactor: ... --- Code restructuring
+
+chore: ... --- Maintenance tasks
+
+style: ... --- Formatting, no logic changes
+
+test: ... --- Adding or correcting tests
 
 📄 License
-MIT License — feel free to use, modify, and share.
+
+MIT License --- feel free to use, modify, and share.
 
 💬 "The best time to plant a tree was 20 years ago. The second best time is now."
-This game helps you plant your financial future — one decision at a time.
+
+This game helps you plant your financial future --- one decision at a time.
