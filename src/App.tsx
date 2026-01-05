@@ -1,23 +1,24 @@
 // App.tsx
-import React from 'react'
-import { BrowserRouter, Routes, Route, useLocation, useNavigate, Navigate } from 'react-router-dom'
-import { GameLayout } from '@/components/layout/GameLayout'
-import { DashboardPage, PortfolioPage, CareerPage, HistoryPage } from '@/pages'
-import { EventModal } from '@/components/game/EventModal'
-import { useUIStore } from '@/store'
-import { SettingsPage } from '@/pages/SettingsPage'
-import { NotificationsPanel } from '@/components/game/NotificationsPanel'
-import { ExpensesPage } from '@/pages/ExpensesPage'
-import { UIState } from './store/uiStore'
+import React from 'react';
+import { BrowserRouter, Routes, Route, useLocation, useNavigate, Navigate } from 'react-router-dom';
+import { GameLayout } from '@/components/layout/GameLayout';
+import { DashboardPage, PortfolioPage, CareerPage, HistoryPage } from '@/pages';
+import { EventModal } from '@/components/game/EventModal';
+import { useUIStore } from '@/store';
+import { SettingsPage } from '@/pages/SettingsPage';
+import { NotificationsPanel } from '@/components/game/NotificationsPanel';
+import { ExpensesPage } from '@/pages/ExpensesPage';
+import { UIState } from './store/uiStore';
+import { GameResultModal } from './components/game/GameResultModal';
 
 const SyncRouteToUI: React.FC = () => {
-  const location = useLocation()
-  const navigate = useNavigate()
-  const setActiveView = useUIStore(state => state.setActiveView)
-  const activeView = useUIStore(state => state.activeView)
+  const location = useLocation();
+  const navigate = useNavigate();
+  const setActiveView = useUIStore(state => state.setActiveView);
+  const activeView = useUIStore(state => state.activeView);
 
   React.useEffect(() => {
-    const path = location.pathname.substring(1) || 'dashboard'
+    const path = location.pathname.substring(1) || 'dashboard';
 
     const validViews: Array<UIState['activeView']> = [
       'dashboard',
@@ -26,44 +27,44 @@ const SyncRouteToUI: React.FC = () => {
       'history',
       'settings',
       'help',
-      'expenses'
-    ]
+      'expenses',
+    ];
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     if (validViews.includes(path as any)) {
       if (activeView !== path) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        setActiveView(path as any)
+        setActiveView(path as any);
       }
     } else {
       // Неверный маршрут → редирект на /dashboard
-      navigate('/dashboard', { replace: true })
+      navigate('/dashboard', { replace: true });
     }
-  }, [location, navigate, setActiveView, activeView])
+  }, [location, navigate, setActiveView, activeView]);
 
-  return null
-}
+  return null;
+};
 
 const SyncUIToRoute: React.FC = () => {
-  const navigate = useNavigate()
-  const activeView = useUIStore(state => state.activeView)
+  const navigate = useNavigate();
+  const activeView = useUIStore(state => state.activeView);
 
   React.useEffect(() => {
-    const path = `/${activeView}`
+    const path = `/${activeView}`;
     if (location.pathname !== path) {
-      navigate(path, { replace: false })
+      navigate(path, { replace: false });
     }
-  }, [activeView, navigate])
+  }, [activeView, navigate]);
 
-  return null
-}
+  return null;
+};
 
 function App() {
   return (
     <BrowserRouter>
       <SyncRouteToUI />
       <SyncUIToRoute />
-      
+
       <GameLayout>
         <Routes>
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
@@ -80,8 +81,9 @@ function App() {
 
       <EventModal />
       <NotificationsPanel />
+      <GameResultModal />
     </BrowserRouter>
-  )
+  );
 }
 
-export default App
+export default App;

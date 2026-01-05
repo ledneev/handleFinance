@@ -1,10 +1,8 @@
-// store/slices/goalsSlice.ts
-import { notify } from '@/store/uiStore';
+import { useUIStore } from '@/store/uiStore';
 import { getGoalDescription } from '@/utils/game';
 import type { GameStore } from '@/types/game.types';
 import type { GameSettings } from '@/types/game.types';
 
-// Просто определим тип для set — Zustand-совместимый
 type SetState = (partial: Partial<GameStore> | ((state: GameStore) => Partial<GameStore>)) => void;
 type GetState = () => GameStore;
 
@@ -29,43 +27,51 @@ export const createGoalsSlice = (set: SetState, get: GetState) => ({
   },
 
   checkGoal: () => {
-    const state = get();
-    if (!state.gameSettings || state.gameOver) return;
+  const state = get()
+  if (!state.gameSettings || state.gameOver) return
 
-    const { gameSettings } = state;
-    const goal = gameSettings.goal; // ✅ Теперь безопасно
+  const { gameSettings } = state
+  const goal = gameSettings.goal
+  const yearsPassed = state.currentYear - gameSettings.startedAtYear
+  const isTimeUp = yearsPassed >= gameSettings.timeLimitYears
 
-    const yearsPassed = state.currentYear - gameSettings.startedAtYear;
-    const isTimeUp = yearsPassed >= gameSettings.timeLimitYears;
+  let isGoalAchieved = false
 
-    let isGoalAchieved = false;
+  switch (goal.type) {
+    case 'wealth':
+      isGoalAchieved = state.balance >= goal.targetAmount
+      break
+    case 'lifestyle':
+      isGoalAchieved =
+        state.expenses.every(e => e.level === e.maxLevel) &&
+        state.oneTimePurchases.every(i => i.purchased)
+      break
+    case 'career':
+      isGoalAchieved = state.player.career === goal.targetLevel
+      break
+    case 'skill':
+      isGoalAchieved = state.player.skills[goal.skill] >= goal.target
+      break
+    default:
+      return
+  }
 
-    switch (goal.type) {
-      case 'wealth':
-        isGoalAchieved = state.balance >= goal.targetAmount;
-        break;
-      case 'lifestyle':
-        isGoalAchieved =
-          state.expenses.every(e => e.level === e.maxLevel) &&
-          state.oneTimePurchases.every(i => i.purchased);
-        break;
-      case 'career':
-        isGoalAchieved = state.player.career === goal.targetLevel;
-        break;
-      case 'skill':
-        { const skillValue = state.player.skills[goal.skill];
-        isGoalAchieved = skillValue >= goal.target;
-        break; }
-      default:
-        return;
-    }
+  if (isGoalAchieved || isTimeUp) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const netWorth = state.balance + state.history[state.history.length - 1]?.netWorth || 0
 
-    if (isGoalAchieved) {
-      set({ gameOver: true, gameWon: true });
-      notify.success('🎉 Победа!', `Цель достигнута за ${yearsPassed} лет!`);
-    } else if (isTimeUp) {
-      set({ gameOver: true, gameWon: false });
-      notify.error('⏰ Время вышло!', 'Вы не успели.');
-    }
-  },
+    set({ gameOver: true, gameWon: isGoalAchieved })
+
+    useUIStore.getState().openInfoModal({
+      title: isGoalAchieved ? '🎉 Победа!' : '💀 Игра окончена',
+      message: isGoalAchieved
+        ? `Вы достигли цели: ${getGoalDescription(goal)}\n\nЗа ${yearsPassed} лет вы построили свою мечту!`
+        : `Вы не успели достичь цели: ${getGoalDescription(goal)}\n\nВремя вышло — попробуйте снова!`,
+      // Добавим статистику в data
+    })
+
+
+    state.eventLog.push(isGoalAchieved ? '🏆 Цель достигнута!' : '⏳ Время вышло')
+  }
+}
 });

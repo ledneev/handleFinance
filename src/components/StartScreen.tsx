@@ -9,9 +9,9 @@ export const StartScreen: React.FC = () => {
   const { setShowStartScreen } = useUIStore()
 
   const [form, setForm] = useState<Omit<GameSettings, 'startedAtYear'>>({
-    playerName: 'Игрок',
+    playerName: 'Инвестор',
     initialBalance: 500000,
-    initialSkills: { programming: 50, finance: 30, luck: 50 },
+    initialSkills: { programming: 20, finance: 10, luck: 50 },
     goal: { type: 'wealth', targetAmount: 10_000_000 } as GameGoal,
     timeLimitYears: 20,
   })
@@ -108,7 +108,7 @@ export const StartScreen: React.FC = () => {
                         ? { type: 'lifestyle', description: 'Max lifestyle' }
                         : type === 'career'
                           ? { type: 'career', targetLevel: 'senior' }
-                          : { type: 'skill', skill: 'programming', target: 80 },
+                          : { type: 'skill', skill: 'programming', target: 100 },
                 })
               }}
               className="mt-1 block w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
@@ -116,7 +116,7 @@ export const StartScreen: React.FC = () => {
               <option value="wealth">Заработать 10 млн ₽</option>
               <option value="lifestyle">Максимум качества жизни</option>
               <option value="career">Достичь уровня Senior</option>
-              <option value="skill">Развить навык программирования до 80%</option>
+              <option value="skill">Развить навык программирования до 100%</option>
             </select>
           </div>
 

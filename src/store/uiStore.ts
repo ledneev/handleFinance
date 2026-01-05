@@ -239,9 +239,9 @@ export const isConfirmModal = (modal: ModalState): modal is ModalState<ConfirmMo
   return modal.type === 'confirm';
 };
 
-export const isInfoModal = (modal: ModalState): modal is ModalState<InfoModalData> => {
-  return modal.type === 'info';
-};
+export const isInfoModal = (modal: ModalState): modal is ModalState<InfoModalData> & { data: InfoModalData } => {
+  return modal.type === 'info' && !!modal.data
+}
 
 // Хелпер для безопасного получения данных модалки
 export const getModalData = <T = unknown>(modal: ModalState): T | undefined => {
