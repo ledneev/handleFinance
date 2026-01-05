@@ -10,7 +10,7 @@ import { calculateMonthlyExpenses } from '@/utils/expenses'
 
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const createGameStateSlice: GameStateSlice = (set, get) => ({
+export const createGameStateSlice: GameStateSlice = (_set, _get) => ({
   // === Состояние ===
   currentYear: STARTING_YEAR,
   balance: INITIAL_BALANCE,

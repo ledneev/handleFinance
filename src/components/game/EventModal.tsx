@@ -9,8 +9,6 @@ import {
   XCircle,
   Info,
   TrendingUp,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  TrendingDown,
   TrendingDownIcon,
   TrendingUpIcon,
   Wallet,

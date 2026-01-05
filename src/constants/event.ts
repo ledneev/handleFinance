@@ -164,7 +164,7 @@ export const EVENT_TEMPLATES: Omit<GameEvent, 'id' | 'year' | 'isResolved'>[] = 
 
 export const getRandomEvent = (
   year: number,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
   playerSkills: unknown
 ): Omit<GameEvent, 'id' | 'isResolved'> => {
   const templates = [...EVENT_TEMPLATES]
@@ -180,7 +180,7 @@ export const getRandomEvent = (
   
   const template = availableTemplates[Math.floor(Math.random() * availableTemplates.length)] 
     || templates[0]
-  
+  console.log(playerSkills)
   return {
     ...template,
     year

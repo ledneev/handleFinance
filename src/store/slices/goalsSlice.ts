@@ -57,7 +57,6 @@ export const createGoalsSlice = (set: SetState, get: GetState) => ({
   }
 
   if (isGoalAchieved || isTimeUp) {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const netWorth = state.balance + state.history[state.history.length - 1]?.netWorth || 0
 
     set({ gameOver: true, gameWon: isGoalAchieved })
@@ -69,7 +68,7 @@ export const createGoalsSlice = (set: SetState, get: GetState) => ({
         : `Вы не успели достичь цели: ${getGoalDescription(goal)}\n\nВремя вышло — попробуйте снова!`,
       // Добавим статистику в data
     })
-
+    console.log(netWorth)
 
     state.eventLog.push(isGoalAchieved ? '🏆 Цель достигнута!' : '⏳ Время вышло')
   }

@@ -25,7 +25,6 @@ const expenseIcons = {
 };
 
 export const ExpensesPage: React.FC = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { expenses, oneTimePurchases, updateExpenseLevel, purchaseItem, balance, monthlyExpenses, player, } =
     useGameStore();
 
@@ -40,7 +39,7 @@ export const ExpensesPage: React.FC = () => {
 
     const expense = expenses.find(e => e.id === expenseId);
     if (!expense) return;
-
+    console.log(monthlyExpenses)
     const currentMultiplier = 1 + (expense.level - 1) * 0.5;
     const newMultiplier = 1 + (newLevel - 1) * 0.5;
     const costDifference = expense.baseAmount * (newMultiplier - currentMultiplier);
