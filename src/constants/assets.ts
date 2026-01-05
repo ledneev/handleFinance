@@ -1,4 +1,4 @@
-import type { Asset } from '@/types/game.types'
+import type { Asset } from '@/types/game.types';
 
 /**
  * Все доступные активы в игре
@@ -14,7 +14,7 @@ export const INITIAL_ASSETS: Asset[] = [
     trend: 0.2,
     description: 'Стабильные акции технологического гиганта. Средний риск, стабильный рост.',
     category: 'tech',
-    dividendYield: 0.015 // 1.5% дивиденды
+    dividendYield: 0.015, // 1.5% дивиденды
   },
   {
     id: 'bitcoin',
@@ -23,8 +23,9 @@ export const INITIAL_ASSETS: Asset[] = [
     currentPrice: 50000,
     volatility: 0.8,
     trend: 0.1,
-    description: 'Криптовалюта с высокой волатильностью. Высокий риск, высокая потенциальная доходность.',
-    category: 'crypto'
+    description:
+      'Криптовалюта с высокой волатильностью. Высокий риск, высокая потенциальная доходность.',
+    category: 'crypto',
   },
   {
     id: 'real-estate-moscow',
@@ -35,23 +36,23 @@ export const INITIAL_ASSETS: Asset[] = [
     trend: 0.3,
     description: 'Квартира в центре Москвы. Низкий риск, стабильный рост + арендный доход.',
     category: 'real_estate',
-    rentalYield: 0.05 // 5% годовых от аренды
+    rentalYield: 0.05, // 5% годовых от аренды
   },
   {
     id: 'online-courses',
     name: 'Онлайн-курсы',
     type: 'consumable', // Меняем на consumable
     currentPrice: 100000,
-    volatility: 0.1,
-    trend: 0.9,
+    volatility: 0,
+    trend: 0,
     description: 'Инвестиция в себя. Повышает навыки программирования, ускоряет карьерный рост.',
     category: 'education',
     effects: {
       skillBonus: { programming: 15 },
       careerBoost: 0.3,
-      immediateEffect: true
+      immediateEffect: true,
     },
-    isConsumable: true
+    isConsumable: true,
   },
   {
     id: 'bank-deposit',
@@ -62,7 +63,7 @@ export const INITIAL_ASSETS: Asset[] = [
     trend: 0.1,
     description: 'Надежный, но низкий процент. Подходит для консервативных инвесторов.',
     category: 'bank',
-    interestRate: 0.08 // 8% годовых
+    interestRate: 0.08, // 8% годовых
   },
   {
     id: 'tesla-stock',
@@ -72,7 +73,7 @@ export const INITIAL_ASSETS: Asset[] = [
     volatility: 0.5,
     trend: 0.4,
     description: 'Акции инновационной компании. Высокая волатильность, высокий потенциал роста.',
-    category: 'tech'
+    category: 'tech',
   },
   {
     id: 'ethereum',
@@ -82,24 +83,40 @@ export const INITIAL_ASSETS: Asset[] = [
     volatility: 0.7,
     trend: 0.25,
     description: 'Вторая по капитализации криптовалюта. Платформа для смарт-контрактов.',
-    category: 'crypto'
+    category: 'crypto',
   },
   {
     id: 'finance-courses',
     name: 'Курсы по финансам',
     type: 'consumable',
     currentPrice: 75000,
-    volatility: 0.05,
-    trend: 0.8,
+    volatility: 0,
+    trend: 0,
     description: 'Изучение основ инвестирования и управления финансами.',
     category: 'education',
     effects: {
       skillBonus: { finance: 20 },
-      immediateEffect: true
+      immediateEffect: true,
     },
-    isConsumable: true
-  }
-]
+    isConsumable: true,
+  },
+  {
+    id: 'college',
+    name: '🎓 Колледж',
+    type: 'education',
+    description: '3 года обучения. Каждый год повышает навык программирования.',
+    currentPrice: 300000,
+    trend: 0.02,
+    volatility: 0.1,
+    effects: {
+      oneTimeEffect: {
+        type: 'college_education',
+        durationYears: 3,
+        yearlySkillBonus: 5,
+      },
+    },
+  },
+];
 
 /**
  * Сгруппированные активы по категориям для UI
@@ -110,16 +127,16 @@ export const ASSETS_BY_CATEGORY = {
   crypto: INITIAL_ASSETS.filter(a => a.type === 'crypto'),
   real_estate: INITIAL_ASSETS.filter(a => a.type === 'real_estate'),
   education: INITIAL_ASSETS.filter(a => a.type === 'education'),
-  bank: INITIAL_ASSETS.filter(a => a.type === 'bank')
-}
+  bank: INITIAL_ASSETS.filter(a => a.type === 'bank'),
+};
 
 /**
  * Найти актив по ID
  */
 
 export const getAssetById = (id: string): Asset | undefined => {
-  return INITIAL_ASSETS.find(asset => asset.id === id)
-}
+  return INITIAL_ASSETS.find(asset => asset.id === id);
+};
 
 /**
  * Рассчитать прогнозируемую доходность актива
@@ -127,7 +144,7 @@ export const getAssetById = (id: string): Asset | undefined => {
 
 export const calculateExpectedReturn = (asset: Asset, years: number = 1): number => {
   // Формула: цена * (1 + тренд)^годы ± волатильность
-  const baseGrowth = Math.pow(1 + (asset.trend * 0.1), years)
-  const volatilityEffect = (Math.random() - 0.5) * asset.volatility
-  return asset.currentPrice * (baseGrowth + volatilityEffect)
-}
+  const baseGrowth = Math.pow(1 + asset.trend * 0.1, years);
+  const volatilityEffect = (Math.random() - 0.5) * asset.volatility;
+  return asset.currentPrice * (baseGrowth + volatilityEffect);
+};

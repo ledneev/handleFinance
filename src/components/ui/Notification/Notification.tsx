@@ -128,7 +128,7 @@ export const NotificationsContainer: React.FC<NotificationsContainerProps> = ({
   notifications,
   onClose,
   position = 'top-right',
-  maxNotifications = 5
+  maxNotifications = 1
 }) => {
   const positionClasses = {
     'top-right': 'top-4 right-4',

@@ -5,6 +5,7 @@ import { EventModal } from '@/components/game/EventModal'
 import { useUIStore } from '@/store'
 import { SettingsPage } from '@/pages/SettingsPage'
 import { NotificationsPanel } from '@/components/game/NotificationsPanel'
+import { ExpensesPage } from '@/pages/ExpensesPage'
 
 function App() {
   const { activeView } = useUIStore()
@@ -23,6 +24,8 @@ function App() {
       return <SettingsPage />
     case 'help':
       return <div>Помощь (в разработке)</div>
+    case 'expenses':
+      return <ExpensesPage/>
     default:
       return <DashboardPage />
   }

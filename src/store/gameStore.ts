@@ -1,14 +1,19 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { nanoid } from 'nanoid';
-import type { GameStore } from '@/types/game.types';
-import { notify } from './uiStore';
+import type { Expense, GameEvent, GameStore, OngoingEffect } from '@/types/game.types';
+import { notify, useUIStore } from './uiStore';
 
-import { INITIAL_PLAYER, INITIAL_BALANCE, STARTING_YEAR } from '@/constants';
+import { INITIAL_PLAYER, INITIAL_BALANCE, STARTING_YEAR, getRandomEvent } from '@/constants';
 import { INITIAL_ASSETS } from '@/constants/assets';
-import { getRandomEventTemplate } from '@/constants/event';
+
 import { CAREER_CONFIGS, CAREER_LEVELS } from '@/constants/careers';
 import { formatCurrency } from '@/utils';
+import { EXPENSES, ONE_TIME_PURCHASES } from '@/constants/expenses';
+
+const calculateMonthlyExpenses = (expenses: Expense[]): number => {
+  return expenses.reduce((total, expense) => total + expense.currentAmount, 0);
+};
 
 export const useGameStore = create<GameStore>()(
   persist(
@@ -20,6 +25,8 @@ export const useGameStore = create<GameStore>()(
       priceChanges: {} as Record<string, number>,
       portfolio: [],
       availableAssets: INITIAL_ASSETS,
+      educationPurchases: [],
+      ongoingEffects: [],
 
       events: [],
       history: [
@@ -34,14 +41,63 @@ export const useGameStore = create<GameStore>()(
       eventLog: ['Добро пожаловать в симулятор финансов!'],
 
       selectedAssetId: null,
+      delayedEffects: [],
+
+      oneTimePurchases: ONE_TIME_PURCHASES,
+      monthlyExpenses: calculateMonthlyExpenses(EXPENSES),
+      expenses: EXPENSES,
 
       advanceYear: () => {
         const state = get();
+        const monthlyExpenses = calculateMonthlyExpenses(state.expenses);
+        const yearlyExpenses = monthlyExpenses * 12;
         const newYear = state.currentYear + 1;
-
-        // Используем константу месяцев
         const yearlySalary = state.player.salary * 12;
-        const newBalance = state.balance + yearlySalary;
+        const projectedBalance = state.balance + yearlySalary - yearlyExpenses;
+
+        const updatedEffects = [...state.ongoingEffects];
+        let skillBonus = 0;
+        const effectMessages: string[] = [];
+
+        if (projectedBalance < 0) {
+          notify.error(
+            'Финансовый кризис',
+            `Недостаточно средств к концу года! Недостаёт: ${formatCurrency(-projectedBalance)}`
+          );
+          return;
+        }
+
+        const newBalance = state.balance + yearlySalary - yearlyExpenses;
+
+        updatedEffects.forEach(effect => {
+          if (
+            effect.type === 'college_education' &&
+            !effect.appliedThisYear &&
+            effect.remainingYears > 0
+          ) {
+            skillBonus += effect.yearlySkillBonus;
+            effect.appliedThisYear = true;
+          }
+        });
+
+        const newSkills = { ...state.player.skills };
+        if (skillBonus > 0) {
+          newSkills.programming = Math.min(100, newSkills.programming + skillBonus);
+          effectMessages.push(`🎓 +${skillBonus} к программированию за обучение`);
+        }
+
+        updatedEffects.forEach(effect => {
+          effect.appliedThisYear = false;
+        });
+
+        const activeEffects = updatedEffects.filter(effect => {
+          if (effect.remainingYears <= 1) {
+            effectMessages.push(`🎓 Завершено обучение: ${effect.type}`);
+            return false;
+          }
+          effect.remainingYears -= 1;
+          return true;
+        });
 
         const updatedAssets = state.availableAssets.map(asset => ({
           ...asset,
@@ -81,10 +137,16 @@ export const useGameStore = create<GameStore>()(
           eventLog: [
             ...state.eventLog,
             `Год ${newYear}: получена зарплата ${yearlySalary.toLocaleString()}₽`,
+            ...effectMessages,
           ],
+          player: {
+            ...state.player,
+            skills: newSkills,
+          },
+          ongoingEffects: activeEffects,
         });
 
-        if (Math.random() < 0.3) {
+        if (Math.random() < 0.8) {
           get().triggerRandomEvent();
         }
       },
@@ -124,8 +186,52 @@ export const useGameStore = create<GameStore>()(
           return;
         }
 
-        // --- 🔹 Покупка consumable (учебники, курсы и т.д.) ---
+        if (asset.id === 'college') {
+          const alreadyHasCollege = state.ongoingEffects.some(e => e.type === 'college_education');
+          if (alreadyHasCollege) {
+            notify.error('Ограничение', 'Вы уже поступили в колледж. Можно только один раз.');
+            return;
+          }
+
+          if (state.balance < asset.currentPrice) {
+            notify.error('Недостаточно средств', `Нужно: ${formatCurrency(asset.currentPrice)}`);
+            return;
+          }
+
+          const collegeEffect: OngoingEffect = {
+            id: nanoid(),
+            type: 'college_education',
+            assetId: 'college',
+            remainingYears: 3,
+            yearlySkillBonus: 5,
+            appliedThisYear: false,
+          };
+
+          set({
+            balance: state.balance - asset.currentPrice,
+            ongoingEffects: [...state.ongoingEffects, collegeEffect],
+            eventLog: [
+              ...state.eventLog,
+              `🎓 Вы поступили в колледж! Будет давать +5 к программированию 3 года подряд.`,
+            ],
+          });
+
+          notify.success('Колледж', 'Вы начали обучение! 🎓');
+          return;
+        }
+
         if (asset.type === 'consumable' || asset.isConsumable) {
+          const alreadyPurchasedThisYear = state.educationPurchases.some(
+            purchase => purchase.year === state.currentYear && purchase.assetId === assetId
+          );
+
+          if (alreadyPurchasedThisYear) {
+            notify.error(
+              'Ограничение',
+              'Вы уже покупали курс в этом году. Можно — только один раз в год.'
+            );
+            return;
+          }
           const totalCost = asset.currentPrice * quantity;
 
           if (state.balance < totalCost) {
@@ -141,7 +247,6 @@ export const useGameStore = create<GameStore>()(
           const newSkills = { ...state.player.skills };
           const messages: string[] = [];
 
-          // Применяем бонусы по навыкам
           if (effects.skillBonus) {
             if (effects.skillBonus.programming) {
               const bonus = effects.skillBonus.programming * quantity;
@@ -171,6 +276,7 @@ export const useGameStore = create<GameStore>()(
               ...state.player,
               skills: newSkills,
             },
+            educationPurchases: [...state.educationPurchases, { year: state.currentYear, assetId }],
             eventLog: [
               ...state.eventLog,
               `🎓 Куплено: ${asset.name} (${quantity} шт.)`,
@@ -178,7 +284,6 @@ export const useGameStore = create<GameStore>()(
             ],
           });
 
-          // ✅ Уведомление
           notify.success('Покупка', `Куплено: ${asset.name} ×${quantity}`);
           if (messages.length > 0) {
             notify.info('Навыки обновлены', messages.join(', '));
@@ -186,7 +291,6 @@ export const useGameStore = create<GameStore>()(
           return;
         }
 
-        // --- 🔹 Покупка инвестиционного актива (акции, недвижимость и т.д.) ---
         const totalCost = asset.currentPrice * quantity;
 
         if (state.balance < totalCost) {
@@ -228,7 +332,6 @@ export const useGameStore = create<GameStore>()(
           eventLog: [...state.eventLog, `✅ Куплено ${quantity} ${asset.name}`],
         });
 
-        // ✅ Уведомление
         notify.success('Покупка', `Куплено ${quantity} ${asset.name}`);
       },
 
@@ -286,6 +389,94 @@ export const useGameStore = create<GameStore>()(
         }
       },
 
+      updateExpenseLevel: (expenseId: string, newLevel: number) => {
+        const state = get();
+
+        const expense = state.expenses.find(e => e.id === expenseId);
+        if (!expense || newLevel < 1 || newLevel > expense.maxLevel) {
+          return;
+        }
+
+        const levelMultiplier = 1 + (newLevel - 1) * 0.5; // +50% за уровень
+        const newAmount = Math.round(expense.baseAmount * levelMultiplier);
+
+        set({
+          expenses: state.expenses.map(exp =>
+            exp.id === expenseId ? { ...exp, level: newLevel, currentAmount: newAmount } : exp
+          ),
+          monthlyExpenses: calculateMonthlyExpenses(state.expenses), // ✅ Пересчёт
+          eventLog: [
+            ...state.eventLog,
+            `📊 Уровень расходов "${expense.name}" изменён на ${newLevel} (${formatCurrency(newAmount)}/мес)`,
+          ],
+        });
+
+        notify.info('Расходы', `Вы изменили уровень: ${expense.name}`);
+      },
+
+      purchaseItem: (itemId: string) => {
+        const state = get();
+        const item = state.oneTimePurchases.find(i => i.id === itemId);
+
+        if (!item) {
+          notify.error('Ошибка', 'Товар не найден');
+          return;
+        }
+
+        if (item.purchased) {
+          notify.error('Ошибка', 'Этот товар уже куплен');
+          return;
+        }
+
+        if (state.balance < item.price) {
+          notify.error('Недостаточно средств', `Нужно: ${formatCurrency(item.price)}`);
+          return;
+        }
+
+        let newSkills = { ...state.player.skills };
+        let newExpenses = [...state.expenses];
+
+        if (item.effects?.skillBonus) {
+          newSkills = {
+            programming: Math.min(
+              100,
+              newSkills.programming + (item.effects.skillBonus.programming || 0)
+            ),
+            finance: Math.min(100, newSkills.finance + (item.effects.skillBonus.finance || 0)),
+            luck: Math.min(100, newSkills.luck + (item.effects.skillBonus.luck || 0)),
+          };
+        }
+
+        if (item.effects?.expenseChange) {
+          newExpenses = newExpenses.map(expense => {
+            const change = item.effects!.expenseChange![expense.id];
+            if (change !== undefined) {
+              return {
+                ...expense,
+                currentAmount: Math.max(0, expense.currentAmount + change),
+              };
+            }
+            return expense;
+          });
+        }
+
+        set({
+          balance: state.balance - item.price,
+          player: {
+            ...state.player,
+            skills: newSkills,
+          },
+          expenses: newExpenses,
+          monthlyExpenses: calculateMonthlyExpenses(newExpenses), // ✅ Пересчёт
+          oneTimePurchases: state.oneTimePurchases.map(i =>
+            i.id === itemId ? { ...i, purchased: true, purchaseDate: Date.now() } : i
+          ),
+          eventLog: [...state.eventLog, `🛒 Куплено: ${item.name}`],
+        });
+
+        notify.success('Покупка', `Приобретено: ${item.name}`);
+      },
+
       upgradeCareer: () => {
         const state = get();
         const currentIndex = CAREER_LEVELS.indexOf(state.player.career);
@@ -334,16 +525,22 @@ export const useGameStore = create<GameStore>()(
       },
 
       triggerRandomEvent: () => {
-        const template = getRandomEventTemplate();
-        const event = {
-          ...template,
+        const state = get();
+        const eventTemplate = getRandomEvent(state.currentYear, state.player.skills);
+
+        const event: GameEvent = {
+          ...eventTemplate,
           id: nanoid(),
+          year: state.currentYear,
+          isResolved: false,
         };
 
-        set(state => ({
+        set({
           events: [...state.events, event],
           eventLog: [...state.eventLog, `⚡ Событие: ${event.title}`],
-        }));
+        });
+
+        useUIStore.getState().openEventModal(event);
       },
 
       resolveEvent: (eventId: string, choiceIndex?: number) => {
@@ -352,20 +549,134 @@ export const useGameStore = create<GameStore>()(
 
         if (!event) return;
 
-        // Применяем эффект события
-        if (choiceIndex !== undefined && event.choices) {
-          const choice = event.choices[choiceIndex];
-          if (choice.effect.balanceChange) {
-            set({ balance: state.balance + choice.effect.balanceChange });
+        if (choiceIndex === undefined) {
+          if (event.effect.delayedEffect) {
+            const delayedEffect = {
+              id: nanoid(),
+              effect: event.effect.delayedEffect.effect,
+              triggerYear: state.currentYear + event.effect.delayedEffect.yearsDelay,
+            };
+
+            set({
+              delayedEffects: [...state.delayedEffects, delayedEffect],
+              eventLog: [
+                ...state.eventLog,
+                `⏳ Эффект "${event.title}" будет применён через ${event.effect.delayedEffect.yearsDelay} года`,
+              ],
+            });
           }
-        } else if (event.effect.balanceChange) {
-          set({ balance: state.balance + event.effect.balanceChange });
+
+          set({
+            events: state.events.filter(e => e.id !== eventId),
+            eventLog: [...state.eventLog, `✅ Событие: ${event.title}`],
+          });
+
+          return;
         }
 
-        // Удаляем обработанное событие
+        const choice = event.choices[choiceIndex];
+        if (!choice) {
+          set({
+            events: state.events.filter(e => e.id !== eventId),
+            eventLog: [...state.eventLog, `❌ Неверный выбор для события: ${event.title}`],
+          });
+          return;
+        }
+
+        if (choice.requires) {
+          const { minBalance, minSkills, hasAsset } = choice.requires;
+
+          if (minBalance !== undefined && state.balance < minBalance) {
+            notify.error('Недостаточно средств', `Требуется: ${formatCurrency(minBalance)}`);
+            return;
+          }
+
+          if (minSkills) {
+            const { programming, finance, luck } = state.player.skills;
+            if (
+              (minSkills.programming && programming < minSkills.programming) ||
+              (minSkills.finance && finance < minSkills.finance) ||
+              (minSkills.luck && luck < minSkills.luck)
+            ) {
+              notify.error('Условие не выполнено', 'Недостаточно навыков');
+              return;
+            }
+          }
+
+          if (hasAsset && !state.portfolio.some(item => item.assetId === hasAsset)) {
+            notify.error('Условие не выполнено', 'Требуется актив: ' + hasAsset);
+            return;
+          }
+        }
+
+        if (choice.cost && state.balance < choice.cost) {
+          notify.error('Недостаточно средств', `Нужно: ${formatCurrency(choice.cost)}`);
+          return;
+        }
+
+        let newBalance = state.balance;
+        let newSkills = { ...state.player.skills };
+
+        if (choice.cost) {
+          newBalance -= choice.cost;
+        }
+
+        if (choice.effect.balanceChange) {
+          newBalance += choice.effect.balanceChange;
+        }
+
+        if (choice.effect.skillChange) {
+          newSkills = {
+            programming: Math.max(
+              0,
+              Math.min(100, newSkills.programming + (choice.effect.skillChange.programming || 0))
+            ),
+            finance: Math.max(
+              0,
+              Math.min(100, newSkills.finance + (choice.effect.skillChange.finance || 0))
+            ),
+            luck: Math.max(
+              0,
+              Math.min(100, newSkills.luck + (choice.effect.skillChange.luck || 0))
+            ),
+          };
+        }
+
+        if (choice.effect.delayedEffect) {
+          const delayedEffect = {
+            id: nanoid(),
+            effect: choice.effect.delayedEffect.effect,
+            triggerYear: state.currentYear + choice.effect.delayedEffect.yearsDelay,
+          };
+
+          set({
+            delayedEffects: [...state.delayedEffects, delayedEffect],
+            eventLog: [
+              ...state.eventLog,
+              `⏳ Эффект "${choice.text}" будет применён через ${choice.effect.delayedEffect.yearsDelay} года`,
+            ],
+          });
+        }
+
+        const majorEvent = `[${event.type.toUpperCase()}] ${event.title}: ${choice.text}`;
+        const newHistory = state.history.map(entry =>
+          entry.year === state.currentYear
+            ? { ...entry, majorEvents: [...entry.majorEvents, majorEvent] }
+            : entry
+        );
+
         set({
+          balance: newBalance,
+          player: {
+            ...state.player,
+            skills: newSkills,
+          },
           events: state.events.filter(e => e.id !== eventId),
+          eventLog: [...state.eventLog, `✅ Решено: ${event.title} → ${choice.text}`],
+          history: newHistory,
         });
+
+        notify.success('Событие решено', choice.text);
       },
 
       resetGame: () => {
@@ -388,6 +699,14 @@ export const useGameStore = create<GameStore>()(
           ],
           eventLog: ['🎮 Игра сброшена, начинаем заново!'],
           selectedAssetId: null,
+          delayedEffects: [],
+          educationPurchases: [],
+          ongoingEffects: [],
+
+
+          expenses: JSON.parse(JSON.stringify(EXPENSES)),
+          oneTimePurchases: JSON.parse(JSON.stringify(ONE_TIME_PURCHASES)),
+          monthlyExpenses: calculateMonthlyExpenses(EXPENSES),
         });
       },
     }),
@@ -400,6 +719,12 @@ export const useGameStore = create<GameStore>()(
         player: state.player,
         portfolio: state.portfolio,
         history: state.history,
+        delayedEffects: state.delayedEffects,
+        educationPurchases: state.educationPurchases,
+        ongoingEffects: state.ongoingEffects,
+        expenses: state.expenses,
+        oneTimePurchases: state.oneTimePurchases,
+        monthlyExpenses: state.monthlyExpenses,
       }),
     }
   )

@@ -209,6 +209,27 @@ export const AssetCard: React.FC<AssetCardProps> = ({
             </div>
           </div>
         )}
+        {asset.type === 'education' && asset.effects?.oneTimeEffect && (
+          <div className="mb-4 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-100 dark:border-green-900/30">
+            <div className="text-sm font-medium text-green-700 dark:text-green-300 mb-1">
+              Долгосрочный эффект
+            </div>
+            <div className="text-xs text-green-600 dark:text-green-400 space-y-1">
+              <div>
+                🎓 +{asset.effects.oneTimeEffect.yearlySkillBonus} к программированию
+                {asset.effects.oneTimeEffect.durationYears > 1
+                  ? ` каждый год в течение ${asset.effects.oneTimeEffect.durationYears} лет`
+                  : ' на следующие годы'}
+              </div>
+              <div className="opacity-75">
+                Всего: +
+                {asset.effects.oneTimeEffect.yearlySkillBonus *
+                  asset.effects.oneTimeEffect.durationYears}{' '}
+                к навыку
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="flex items-center gap-3 mb-4">
           <div className="flex-1">

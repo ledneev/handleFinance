@@ -132,7 +132,7 @@ export const DashboardPage: React.FC = () => {
       {/* Быстрые действия */}
       <Card>
         <CardHeader>
-          <CardTitle>🚀 Быстрые действия</CardTitle>
+          <CardTitle>🚀 Быстрые действия (в разработке)</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

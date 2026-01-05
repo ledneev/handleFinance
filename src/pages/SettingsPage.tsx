@@ -33,7 +33,7 @@ export const SettingsPage: React.FC = () => {
       <Card>
         <CardHeader>
           <CardTitle>🎨 Внешний вид</CardTitle>
-          <CardDescription>Настройте тему и отображение игры</CardDescription>
+          <CardDescription>Настройте тему и отображение игры (пока не работает, переключение только через prefer color scheme)</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
@@ -159,7 +159,7 @@ export const SettingsPage: React.FC = () => {
           <div className="space-y-4 text-sm text-gray-600 dark:text-gray-400">
             <div>
               <h4 className="font-medium text-gray-900 dark:text-white mb-1">Версия игры</h4>
-              <p>1.0.0 (альфа)</p>
+              <p>0.0.1 (альфа)</p>
             </div>
             <div>
               <h4 className="font-medium text-gray-900 dark:text-white mb-1">Сохранение данных</h4>

@@ -8,6 +8,7 @@ import {
   Settings,
   HelpCircle,
   Github,
+  CreditCard,
 } from 'lucide-react';
 import { cn } from '@/utils/cn';
 
@@ -19,6 +20,7 @@ export const Sidebar: React.FC = () => {
     { id: 'invest', label: 'Инвестиции', icon: TrendingUp },
     { id: 'career', label: 'Карьера', icon: Briefcase },
     { id: 'history', label: 'История', icon: History },
+    { id: 'expenses', label: 'Расходы', icon: CreditCard },
   ];
 
   const bottomItems = [
@@ -34,7 +36,6 @@ export const Sidebar: React.FC = () => {
 
   return (
     <>
-      {/* Overlay для мобильных */}
       {isSidebarOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
@@ -42,7 +43,6 @@ export const Sidebar: React.FC = () => {
         />
       )}
 
-      {/* Sidebar */}
       <aside
         className={cn(
           'fixed top-16 left-0 h-[calc(100vh-4rem)] w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 z-40 transition-transform duration-300 ease-in-out',
@@ -51,7 +51,6 @@ export const Sidebar: React.FC = () => {
         )}
       >
         <div className="flex flex-col h-full">
-          {/* Навигация */}
           <nav className="flex-1 p-4">
             <div className="mb-8">
               <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">
@@ -91,7 +90,6 @@ export const Sidebar: React.FC = () => {
             </div>
           </nav>
 
-          {/* Нижняя часть */}
           <div className="p-4 border-t border-gray-200 dark:border-gray-700">
             <ul className="space-y-1">
               {bottomItems.map(item => {
@@ -132,7 +130,6 @@ export const Sidebar: React.FC = () => {
                   );
                 }
 
-                // Остальные — как кнопки (settings, help)
                 return (
                   <li key={item.id}>
                     <button

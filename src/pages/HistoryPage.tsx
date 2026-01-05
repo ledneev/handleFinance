@@ -285,7 +285,7 @@ export const HistoryPage: React.FC = () => {
                             </div>
                           ))}
                           {history[index]?.majorEvents.length > 2 && (
-                            <button
+                            <button //пока доступно только 1 событие в год, но потом добавлю больше(наверное)
                               onClick={() => {
                                 const allEvents = history[index].majorEvents;
                                 alert(`Все события ${item.year} года:\n\n${allEvents.join('\n')}`);
