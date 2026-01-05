@@ -174,6 +174,25 @@ export interface OneTimePurchase {
   };
 }
 
+export type GameGoal =
+  | { type: 'wealth'; targetAmount: number }
+  | { type: 'lifestyle'; description: string }
+  | { type: 'career'; targetLevel: CareerLevel }
+  | { type: 'skill'; skill: keyof Player['skills']; target: number }
+
+export interface GameSettings {
+  playerName: string
+  initialBalance: number
+  initialSkills: {
+    programming: number
+    finance: number
+    luck: number
+  }
+  goal: GameGoal
+  timeLimitYears: number
+  startedAtYear: number
+}
+
 // ====================== ОСНОВНОЕ СОСТОЯНИЕ ИГРЫ ======================
 
 export interface GameState {
@@ -198,6 +217,10 @@ export interface GameState {
   expenses: Expense[];
   oneTimePurchases: OneTimePurchase[];
   monthlyExpenses: number;
+
+  gameSettings: GameSettings | null
+  gameOver: boolean
+  gameWon: boolean | null
 }
 
 export interface EducationPurchase {
@@ -224,6 +247,8 @@ export type GameActions = {
   resetGame: () => void;
   updateExpenseLevel: (expenseId: string, newLevel: number) => void;
   purchaseItem: (itemId: string) => void;
+  setGameSettings: (settings: GameSettings) => void;
+  checkGoal: () => void;
 };
 
 export type GameStore = GameState & GameActions;
