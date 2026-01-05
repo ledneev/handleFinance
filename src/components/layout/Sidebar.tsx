@@ -1,5 +1,6 @@
-import React from 'react';
-import { useUIStore } from '@/store';
+import React from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useUIStore } from '@/store'
 import {
   LayoutDashboard,
   TrendingUp,
@@ -9,38 +10,45 @@ import {
   HelpCircle,
   Github,
   CreditCard,
-} from 'lucide-react';
-import { cn } from '@/utils/cn';
+} from 'lucide-react'
+import { cn } from '@/utils/cn'
 
 export const Sidebar: React.FC = () => {
-  const { activeView, setActiveView, isSidebarOpen, toggleSidebar } = useUIStore();
+  const { isSidebarOpen, toggleSidebar } = useUIStore()
+  const navigate = useNavigate()
 
   const navItems = [
-    { id: 'dashboard', label: 'Главная', icon: LayoutDashboard },
-    { id: 'invest', label: 'Инвестиции', icon: TrendingUp },
-    { id: 'career', label: 'Карьера', icon: Briefcase },
-    { id: 'history', label: 'История', icon: History },
-    { id: 'expenses', label: 'Расходы', icon: CreditCard },
-  ];
+    { id: 'dashboard', label: 'Главная', icon: LayoutDashboard, path: '/dashboard' },
+    { id: 'invest', label: 'Инвестиции', icon: TrendingUp, path: '/invest' },
+    { id: 'career', label: 'Карьера', icon: Briefcase, path: '/career' },
+    { id: 'history', label: 'История', icon: History, path: '/history' },
+    { id: 'expenses', label: 'Расходы', icon: CreditCard, path: '/expenses' },
+  ]
 
   const bottomItems = [
-    { id: 'settings', label: 'Настройки', icon: Settings },
-    { id: 'help', label: 'Помощь', icon: HelpCircle },
+    { id: 'settings', label: 'Настройки', icon: Settings, path: '/settings' },
+    { id: 'help', label: 'Помощь', icon: HelpCircle, path: '/help' },
     {
       id: 'github',
       label: 'GitHub',
       icon: Github,
       href: 'https://github.com/ledneev/handleFinance',
     },
-  ];
+  ]
+
+  // Хелпер: закрывает сайдбар на мобильных
+  const handleNavigate = (path: string) => {
+    navigate(path)
+    if (window.innerWidth < 1024) {
+      toggleSidebar()
+    }
+  }
 
   return (
     <>
+
       {isSidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
-          onClick={toggleSidebar}
-        />
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden" onClick={toggleSidebar} />
       )}
 
       <aside
@@ -58,33 +66,27 @@ export const Sidebar: React.FC = () => {
               </h3>
               <ul className="space-y-1">
                 {navItems.map(item => {
-                  const Icon = item.icon;
-                  const isActive = activeView === item.id;
+                  const Icon = item.icon
+                  const isActive = window.location.pathname === item.path
 
                   return (
                     <li key={item.id}>
                       <button
-                        onClick={() => {
-                          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                          setActiveView(item.id as any);
-                          // На мобильных закрываем сайдбар после выбора
-                          if (window.innerWidth < 1024) {
-                            toggleSidebar();
-                          }
-                        }}
+                        onClick={() => handleNavigate(item.path)}
                         className={cn(
                           'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-colors',
                           isActive
                             ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
                             : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700/50'
                         )}
+                        aria-current={isActive ? 'page' : undefined}
                       >
                         <Icon className="h-5 w-5 flex-shrink-0" />
                         <span className="font-medium">{item.label}</span>
                         {isActive && <div className="ml-auto w-2 h-2 bg-blue-500 rounded-full" />}
                       </button>
                     </li>
-                  );
+                  )
                 })}
               </ul>
             </div>
@@ -93,10 +95,10 @@ export const Sidebar: React.FC = () => {
           <div className="p-4 border-t border-gray-200 dark:border-gray-700">
             <ul className="space-y-1">
               {bottomItems.map(item => {
-                const Icon = item.icon;
-                const isActive = activeView === item.id;
+                const Icon = item.icon
+                const isActive = item.path ? window.location.pathname === item.path : false
 
-                // Если это GitHub — рендерим как ссылку
+                // GitHub — внешняя ссылка
                 if (item.id === 'github') {
                   return (
                     <li key={item.id}>
@@ -127,37 +129,32 @@ export const Sidebar: React.FC = () => {
                         </svg>
                       </a>
                     </li>
-                  );
+                  )
                 }
 
                 return (
                   <li key={item.id}>
                     <button
-                      onClick={() => {
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        setActiveView(item.id as any);
-                        if (window.innerWidth < 1024) {
-                          toggleSidebar();
-                        }
-                      }}
+                      onClick={() => handleNavigate(item.path!)}
                       className={cn(
                         'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-colors',
                         isActive
                           ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
                           : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700/50'
                       )}
+                      aria-current={isActive ? 'page' : undefined}
                     >
                       <Icon className="h-5 w-5 flex-shrink-0" />
                       <span className="font-medium">{item.label}</span>
                       {isActive && <div className="ml-auto w-2 h-2 bg-blue-500 rounded-full" />}
                     </button>
                   </li>
-                );
+                )
               })}
             </ul>
           </div>
         </div>
       </aside>
     </>
-  );
-};
+  )
+}
