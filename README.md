@@ -1,7 +1,7 @@
 # 🎮 Financial Life Simulator
 
 ## 🚀 Published version
-[![Vercel Deploy](https://img.shields.io/badge/Deployed%20on-Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://handlefinancebyledneev.vercel.app/)
+[![Vercel Deploy](https://img.shields.io/badge/Deployed%20on-Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://handle-finance.vercel.app/)
 
 A dynamic, educational life simulation game where players manage their career, finances, investments, and life choices to achieve personal goals — all in a risk-free environment.
 
