@@ -55,6 +55,7 @@ export interface UIState {
   isSidebarOpen: boolean;
   activeView: 'dashboard' | 'invest' | 'career' | 'history' | 'settings' | 'help' | 'expenses';
   showStartScreen: boolean;
+  hasGameStarted: boolean;
 }
 
 interface UIActions {
@@ -84,6 +85,8 @@ interface UIActions {
   toggleSidebar: () => void;
   setActiveView: (view: UIState['activeView']) => void;
   setShowStartScreen: (show: boolean) => void;
+
+  setHasGameStarted: (started: boolean) => void;
 }
 
 export type UIStore = UIState & UIActions;
@@ -98,6 +101,7 @@ const initialState: UIState = {
   isSidebarOpen: false,
   activeView: 'dashboard',
   showStartScreen: true,
+  hasGameStarted: false,
 };
 
 export const useUIStore = create<UIStore>((set, get) => ({
@@ -188,6 +192,10 @@ export const useUIStore = create<UIStore>((set, get) => ({
   setActiveView: view => {
     set({ activeView: view });
   },
+
+  setHasGameStarted: (started: boolean) => {
+    set({ hasGameStarted: started, showStartScreen: !started });
+  },
 }));
 
 // ====================== УТИЛИТЫ ======================
@@ -239,9 +247,11 @@ export const isConfirmModal = (modal: ModalState): modal is ModalState<ConfirmMo
   return modal.type === 'confirm';
 };
 
-export const isInfoModal = (modal: ModalState): modal is ModalState<InfoModalData> & { data: InfoModalData } => {
-  return modal.type === 'info' && !!modal.data
-}
+export const isInfoModal = (
+  modal: ModalState
+): modal is ModalState<InfoModalData> & { data: InfoModalData } => {
+  return modal.type === 'info' && !!modal.data;
+};
 
 // Хелпер для безопасного получения данных модалки
 export const getModalData = <T = unknown>(modal: ModalState): T | undefined => {

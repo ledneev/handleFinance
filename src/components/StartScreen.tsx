@@ -6,7 +6,6 @@ import { GameGoal, GameSettings } from '@/types/game.types'
 
 export const StartScreen: React.FC = () => {
   const { setGameSettings } = useGameStore()
-  const { setShowStartScreen } = useUIStore()
 
   const [form, setForm] = useState<Omit<GameSettings, 'startedAtYear'>>({
     playerName: 'Инвестор',
@@ -17,12 +16,12 @@ export const StartScreen: React.FC = () => {
   })
 
   const handleSubmit = () => {
-    setGameSettings({
-      ...form,
-      startedAtYear: 2024,
-    })
-    setShowStartScreen(false)
-  }
+  setGameSettings({
+    ...form,
+    startedAtYear: 2024,
+  })
+  useUIStore.getState().setHasGameStarted(true)
+}
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4">
@@ -107,7 +106,7 @@ export const StartScreen: React.FC = () => {
                       : type === 'lifestyle'
                         ? { type: 'lifestyle', description: 'Max lifestyle' }
                         : type === 'career'
-                          ? { type: 'career', targetLevel: 'senior' }
+                          ? { type: 'career', targetLevel: 'director' }
                           : { type: 'skill', skill: 'programming', target: 100 },
                 })
               }}
@@ -115,7 +114,7 @@ export const StartScreen: React.FC = () => {
             >
               <option value="wealth">Заработать 10 млн ₽</option>
               <option value="lifestyle">Максимум качества жизни</option>
-              <option value="career">Достичь уровня Senior</option>
+              <option value="career">Достичь уровня Director</option>
               <option value="skill">Развить навык программирования до 100%</option>
             </select>
           </div>

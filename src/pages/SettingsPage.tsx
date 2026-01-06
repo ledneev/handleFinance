@@ -17,7 +17,7 @@ export const SettingsPage: React.FC = () => {
   const handleClearData = () => {
     if (window.confirm('ВНИМАНИЕ: Это удалит все сохраненные данные. Действие необратимо.')) {
       localStorage.clear();
-      window.location.reload();
+      window.location.href = '/';
     }
   };
 
@@ -33,7 +33,10 @@ export const SettingsPage: React.FC = () => {
       <Card>
         <CardHeader>
           <CardTitle>🎨 Внешний вид</CardTitle>
-          <CardDescription>Настройте тему и отображение игры (пока не работает, переключение только через prefer color scheme)</CardDescription>
+          <CardDescription>
+            Настройте тему и отображение игры (пока не работает, переключение только через prefer
+            color scheme)
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
@@ -193,8 +196,17 @@ export const SettingsPage: React.FC = () => {
               </ul>
             </div>
             <div>
-              <h4 className='font-medium text-gray-900 dark:text-white mb-1'>
-                Проект является открытым, исходный код и документация доступны на <a className='text-blue-800' href="https://github.com/ledneev/handleFinance" target="_blank" rel="noopener noreferrer">GitHub</a>.
+              <h4 className="font-medium text-gray-900 dark:text-white mb-1">
+                Проект является открытым, исходный код и документация доступны на{' '}
+                <a
+                  className="text-blue-800"
+                  href="https://github.com/ledneev/handleFinance"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  GitHub
+                </a>
+                .
               </h4>
             </div>
           </div>

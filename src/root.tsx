@@ -1,11 +1,13 @@
 import { useUIStore } from '@/store/uiStore'
 import { StartScreen } from '@/components/StartScreen'
 import App from './App'
+import { useGameStore } from './store'
 
 export const Root: React.FC = () => {
-  const showStartScreen = useUIStore(state => state.showStartScreen)
+  const hasGameStarted = useUIStore(state => state.hasGameStarted)
+  const gameSettings = useGameStore(state => state.gameSettings)
 
-  if (showStartScreen) {
+  if (!hasGameStarted || !gameSettings) {
     return <StartScreen />
   }
 
