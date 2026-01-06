@@ -1,11 +1,11 @@
-import React, { useState } from 'react'
-import { Button } from '@/components/ui'
-import { useGameStore, useUIStore } from '@/store'
-import { formatCurrency } from '@/utils'
-import { GameGoal, GameSettings } from '@/types/game.types'
+import React, { useState } from 'react';
+import { Button } from '@/components/ui';
+import { formatCurrency } from '@/utils';
+import { GameGoal, GameSettings } from '@/types/game.types';
+import { useGameStore } from '@/store';
 
 export const StartScreen: React.FC = () => {
-  const { setGameSettings } = useGameStore()
+  const { setGameSettings } = useGameStore();
 
   const [form, setForm] = useState<Omit<GameSettings, 'startedAtYear'>>({
     playerName: 'Инвестор',
@@ -13,15 +13,15 @@ export const StartScreen: React.FC = () => {
     initialSkills: { programming: 20, finance: 10, luck: 50 },
     goal: { type: 'wealth', targetAmount: 10_000_000 } as GameGoal,
     timeLimitYears: 20,
-  })
+  });
 
   const handleSubmit = () => {
-  setGameSettings({
-    ...form,
-    startedAtYear: 2024,
-  })
-  useUIStore.getState().setHasGameStarted(true)
-}
+    setGameSettings({
+      ...form,
+      startedAtYear: 2024,
+    });
+    
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4">
@@ -97,7 +97,7 @@ export const StartScreen: React.FC = () => {
             <select
               value={form.goal.type}
               onChange={e => {
-                const type = e.target.value
+                const type = e.target.value;
                 setForm({
                   ...form,
                   goal:
@@ -108,7 +108,7 @@ export const StartScreen: React.FC = () => {
                         : type === 'career'
                           ? { type: 'career', targetLevel: 'director' }
                           : { type: 'skill', skill: 'programming', target: 100 },
-                })
+                });
               }}
               className="mt-1 block w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
             >
@@ -144,5 +144,5 @@ export const StartScreen: React.FC = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};

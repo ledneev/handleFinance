@@ -1,7 +1,7 @@
 
 import { INITIAL_PLAYER } from '@/constants'
 import { EXPENSES, ONE_TIME_PURCHASES } from '@/constants/expenses'
-import { notify, useUIStore } from '@/store/uiStore'
+import { notify} from '@/store/uiStore'
 import { UtilsSlice } from '@/types/store.types'
 import { formatCurrency } from '@/utils'
 import { calculateMonthlyExpenses } from '@/utils/expenses'
@@ -56,8 +56,6 @@ export const createUtilsSlice: UtilsSlice = (set, get) => ({
       gameOver: false,
       gameWon: null,
     })
-
-    useUIStore.getState().setShowStartScreen(true)
 
     notify.info('Игра', 'Состояние сброшено. Настройте игру заново.')
   },
