@@ -10,6 +10,7 @@ import { NotificationsPanel } from '@/components/game/NotificationsPanel';
 import { ExpensesPage } from '@/pages/ExpensesPage';
 import { UIState } from './store/uiStore';
 import { GameResultModal } from './components/game/GameResultModal';
+import { NotificationsContainer } from './components/ui';
 
 const SyncRouteToUI: React.FC = () => {
   const location = useLocation();
@@ -60,6 +61,7 @@ const SyncUIToRoute: React.FC = () => {
 };
 
 function App() {
+  const { notifications, removeNotification } = useUIStore()
   return (
     <BrowserRouter>
       <SyncRouteToUI />
@@ -82,6 +84,12 @@ function App() {
       <EventModal />
       <NotificationsPanel />
       <GameResultModal />
+      <NotificationsContainer
+        notifications={notifications}
+        onClose={removeNotification}
+        position="top-center"
+        maxNotifications={3}
+      />
     </BrowserRouter>
   );
 }

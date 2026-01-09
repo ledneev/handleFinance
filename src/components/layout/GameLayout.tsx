@@ -2,7 +2,6 @@
 import React from 'react'
 import { StatusBar } from '@/components/game/StatusBar'
 import { Sidebar } from './Sidebar'
-import { NotificationsContainer } from '@/components/ui'
 import { useUIStore } from '@/store'
 
 interface GameLayoutProps {
@@ -10,7 +9,7 @@ interface GameLayoutProps {
 }
 
 export const GameLayout: React.FC<GameLayoutProps> = ({ children }) => {
-  const { notifications, removeNotification, isSidebarOpen } = useUIStore()
+  const { isSidebarOpen } = useUIStore()
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -33,11 +32,6 @@ export const GameLayout: React.FC<GameLayoutProps> = ({ children }) => {
         </main>
       </div>
 
-      <NotificationsContainer
-        notifications={notifications}
-        onClose={removeNotification}
-        position="top-right"
-      />
     </div>
   )
 }

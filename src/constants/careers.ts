@@ -6,12 +6,12 @@ import type { CareerLevel } from '@/types/game.types'
  */
 
 export const CAREER_LEVELS: CareerLevel[] = [
-  'intern',     // Стажёр
-  'junior',     // Джуниор
-  'middle',     // Миддл
-  'senior',     // Сеньор
-  'lead',       // Тимлид
-  'director'    // Директор
+  'intern',
+  'junior',
+  'middle',
+  'senior',
+  'lead',
+  'director'    
 ]
 
 /**
@@ -20,9 +20,9 @@ export const CAREER_LEVELS: CareerLevel[] = [
 
 export interface CareerConfig {
   level: CareerLevel
-  baseSalary: number      // Базовая зарплата в месяц
-  upgradeCost: number     // Стоимость повышения (образование/курсы)
-  skillRequirement: number // Требуемый уровень навыка программирования
+  baseSalary: number 
+  upgradeCost: number 
+  skillRequirement: number
   description: string
 }
 
@@ -34,7 +34,7 @@ export const CAREER_CONFIGS: Record<CareerLevel, CareerConfig> = {
   intern: {
     level: 'intern',
     baseSalary: 40000,
-    upgradeCost: 0, // Стартовый уровень
+    upgradeCost: 0,
     skillRequirement: 0,
     description: 'Стажёр. Только начинаете карьеру, учитесь основам.'
   },

@@ -14,7 +14,7 @@ export const INITIAL_PLAYER: Player = {
   id: 'player-1',
   name: 'Инвестор',
   age: 25,
-  career: 'junior',
+  career: 'intern',
   salary: 80000,
   skills: {
     programming: 50,

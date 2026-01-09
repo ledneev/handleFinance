@@ -39,7 +39,7 @@ Built with **React**, **TypeScript**, and **Zustand**, this simulator blends gam
   - Restart option that returns to `StartScreen`
 
 ✅ **Modern Tech Stack**
-- **React 18** + **TypeScript** for robust type safety
+- **React 19** + **TypeScript** for robust type safety
 - **Zustand** with **persist middleware** for state
 - **Tailwind CSS** for fast, responsive UI
 - **React Router** for navigation
