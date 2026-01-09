@@ -38,50 +38,43 @@ export interface InfoModalData {
 // ====================== СОСТОЯНИЕ И ДЕЙСТВИЯ ======================
 
 export interface UIState {
-  // === Тема ===
   theme: Theme;
 
-  // === Модалки ===
-  modal: ModalState; // Теперь одна модалка вместо трех
+  modal: ModalState;
 
-  // === Уведомления ===
   notifications: Notification[];
 
-  // === Загрузки ===
   isLoading: boolean;
   loadingText?: string;
 
-  // === Sidebar/панели ===
   isSidebarOpen: boolean;
   activeView: 'dashboard' | 'invest' | 'career' | 'history' | 'settings' | 'help' | 'expenses';
   showStartScreen: boolean;
   hasGameStarted: boolean;
+
+  areNotificationsEnabled: boolean;
 }
 
 interface UIActions {
-  // === Тема ===
   toggleTheme: () => void;
   setTheme: (theme: Theme) => void;
 
-  // === Универсальные методы для модалок ===
   openModal: <T = unknown>(type: ModalType, data?: T) => void;
   closeModal: () => void;
 
-  // === Специализированные хелперы (удобные обертки) ===
   openEventModal: (event: GameEvent) => void;
   openConfirmModal: (data: ConfirmModalData) => void;
   openInfoModal: (data: InfoModalData) => void;
 
-  // === Уведомления ===
   addNotification: (notification: Omit<Notification, 'id'>) => void;
   removeNotification: (id: string) => void;
   clearNotifications: () => void;
+  toggleNotifications: () => void;
+  setNotificationsEnabled: (enabled: boolean) => void;
 
-  // === Загрузки ===
   startLoading: (text?: string) => void;
   stopLoading: () => void;
 
-  // === Навигация ===
   toggleSidebar: () => void;
   setActiveView: (view: UIState['activeView']) => void;
   setShowStartScreen: (show: boolean) => void;
@@ -102,12 +95,12 @@ const initialState: UIState = {
   activeView: 'dashboard',
   showStartScreen: true,
   hasGameStarted: false,
+  areNotificationsEnabled: true,
 };
 
 export const useUIStore = create<UIStore>((set, get) => ({
   ...initialState,
 
-  // === Тема ===
   toggleTheme: () => {
     set(state => ({
       theme: state.theme === 'light' ? 'dark' : 'light',
@@ -119,7 +112,6 @@ export const useUIStore = create<UIStore>((set, get) => ({
     localStorage.setItem('theme', theme);
   },
 
-  // === МЕТОДЫ ДЛЯ МОДАЛОК ===
   openModal: (type, data) => {
     set({
       modal: { isOpen: true, type, data },
@@ -132,7 +124,6 @@ export const useUIStore = create<UIStore>((set, get) => ({
     });
   },
 
-  // === СПЕЦИАЛИЗИРОВАННЫЕ ХЕЛПЕРЫ ===
   openEventModal: event => {
     get().openModal('event', event);
   },
@@ -145,7 +136,6 @@ export const useUIStore = create<UIStore>((set, get) => ({
     get().openModal('info', data);
   },
 
-  // === Уведомления ===
   addNotification: notification => {
     const id = Date.now().toString();
     const newNotification = { ...notification, id };
@@ -171,7 +161,14 @@ export const useUIStore = create<UIStore>((set, get) => ({
     set({ notifications: [] });
   },
 
-  // === Загрузки ===
+  toggleNotifications: () => {
+    set(state => ({ areNotificationsEnabled: !state.areNotificationsEnabled }));
+  },
+
+  setNotificationsEnabled: enabled => {
+    set({ areNotificationsEnabled: enabled });
+  },
+
   startLoading: text => {
     set({ isLoading: true, loadingText: text });
   },
@@ -180,7 +177,6 @@ export const useUIStore = create<UIStore>((set, get) => ({
     set({ isLoading: false, loadingText: undefined });
   },
 
-  // === Навигация ===
   toggleSidebar: () => {
     set(state => ({ isSidebarOpen: !state.isSidebarOpen }));
   },

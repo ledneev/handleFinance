@@ -5,7 +5,7 @@ import { Button } from '@/components/ui';
 import { Moon, Sun, Bell, RotateCcw, Trash2 } from 'lucide-react';
 
 export const SettingsPage: React.FC = () => {
-  const { theme, toggleTheme, setTheme, clearNotifications } = useUIStore();
+  const { theme, toggleTheme, setTheme, clearNotifications, areNotificationsEnabled, toggleNotifications } = useUIStore();
   const { resetGame } = useGameStore();
 
   const handleResetGame = () => {
@@ -88,9 +88,34 @@ export const SettingsPage: React.FC = () => {
       <Card>
         <CardHeader>
           <CardTitle>🔔 Уведомления</CardTitle>
-          <CardDescription></CardDescription>
+          <CardDescription>Управляйте отображением уведомлений</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+            <div>
+              <h4 className="font-medium">Показывать уведомления</h4>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Включить всплывающие сообщения о событиях
+              </p>
+            </div>
+            <button
+              onClick={toggleNotifications}
+              className={`
+          relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
+          ${areNotificationsEnabled ? 'bg-blue-600' : 'bg-gray-300 dark:bg-gray-700'}
+        `}
+              role="switch"
+              aria-checked={areNotificationsEnabled}
+            >
+              <span
+                className={`
+            inline-block h-4 w-4 transform rounded-full bg-white transition-transform
+            ${areNotificationsEnabled ? 'translate-x-6' : 'translate-x-1'}
+          `}
+              />
+            </button>
+          </div>
+
           <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
             <div>
               <h4 className="font-medium">Очистить все уведомления</h4>
@@ -103,6 +128,7 @@ export const SettingsPage: React.FC = () => {
               size="sm"
               icon={<Bell className="h-4 w-4" />}
               onClick={clearNotifications}
+              disabled={!areNotificationsEnabled}
             >
               Очистить
             </Button>

@@ -61,7 +61,7 @@ const SyncUIToRoute: React.FC = () => {
 };
 
 function App() {
-  const { notifications, removeNotification } = useUIStore()
+  const { notifications, removeNotification, areNotificationsEnabled } = useUIStore();
   return (
     <BrowserRouter>
       <SyncRouteToUI />
@@ -82,14 +82,18 @@ function App() {
       </GameLayout>
 
       <EventModal />
-      <NotificationsPanel />
+
       <GameResultModal />
-      <NotificationsContainer
-        notifications={notifications}
-        onClose={removeNotification}
-        position="top-center"
-        maxNotifications={3}
-      />
+      {areNotificationsEnabled && (
+        <NotificationsContainer
+          notifications={notifications}
+          onClose={removeNotification}
+          position="top-center"
+          maxNotifications={3}
+        />
+      )}
+
+      {areNotificationsEnabled && <NotificationsPanel />}
     </BrowserRouter>
   );
 }
