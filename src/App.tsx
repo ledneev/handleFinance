@@ -1,4 +1,3 @@
-// App.tsx
 import React from 'react';
 import { BrowserRouter, Routes, Route, useLocation, useNavigate, Navigate } from 'react-router-dom';
 import { GameLayout } from '@/components/layout/GameLayout';
@@ -11,6 +10,7 @@ import { ExpensesPage } from '@/pages/ExpensesPage';
 import { UIState } from './store/uiStore';
 import { GameResultModal } from './components/game/GameResultModal';
 import { NotificationsContainer } from './components/ui';
+import { ThemeSync } from '@/components/theme/ThemeSync'
 
 const SyncRouteToUI: React.FC = () => {
   const location = useLocation();
@@ -66,7 +66,7 @@ function App() {
     <BrowserRouter>
       <SyncRouteToUI />
       <SyncUIToRoute />
-
+      <ThemeSync />
       <GameLayout>
         <Routes>
           <Route path="/" element={<Navigate to="/dashboard" replace />} />

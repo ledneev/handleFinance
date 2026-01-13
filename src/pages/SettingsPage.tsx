@@ -34,8 +34,7 @@ export const SettingsPage: React.FC = () => {
         <CardHeader>
           <CardTitle>🎨 Внешний вид</CardTitle>
           <CardDescription>
-            Настройте тему и отображение игры (пока не работает, переключение только через prefer
-            color scheme)
+            Настройте тему и отображение игры
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
