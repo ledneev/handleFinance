@@ -11,6 +11,7 @@ import { UIState } from './store/uiStore';
 import { GameResultModal } from './components/game/GameResultModal';
 import { NotificationsContainer } from './components/ui';
 import { ThemeSync } from '@/components/theme/ThemeSync'
+import { AchievementsPage } from './pages/AchievementsPage';
 
 const SyncRouteToUI: React.FC = () => {
   const location = useLocation();
@@ -29,6 +30,7 @@ const SyncRouteToUI: React.FC = () => {
       'settings',
       'help',
       'expenses',
+      'achievements',
     ];
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -75,6 +77,7 @@ function App() {
           <Route path="/career" element={<CareerPage />} />
           <Route path="/history" element={<HistoryPage />} />
           <Route path="/expenses" element={<ExpensesPage />} />
+          <Route path="/achievements" element={<AchievementsPage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/help" element={<div>Помощь (в разработке)</div>} />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />

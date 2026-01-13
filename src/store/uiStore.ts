@@ -48,7 +48,7 @@ export interface UIState {
   loadingText?: string;
 
   isSidebarOpen: boolean;
-  activeView: 'dashboard' | 'invest' | 'career' | 'history' | 'settings' | 'help' | 'expenses';
+  activeView: 'dashboard' | 'invest' | 'career' | 'history' | 'settings' | 'help' | 'expenses' | 'achievements';
   showStartScreen: boolean;
   hasGameStarted: boolean;
 

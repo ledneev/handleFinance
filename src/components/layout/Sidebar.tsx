@@ -10,6 +10,7 @@ import {
   HelpCircle,
   Github,
   CreditCard,
+  Trophy,
 } from 'lucide-react'
 import { cn } from '@/utils/cn'
 
@@ -23,6 +24,7 @@ export const Sidebar: React.FC = () => {
     { id: 'career', label: 'Карьера', icon: Briefcase, path: '/career' },
     { id: 'history', label: 'История', icon: History, path: '/history' },
     { id: 'expenses', label: 'Расходы', icon: CreditCard, path: '/expenses' },
+    { id: 'achievements', label: 'Достижения', icon: Trophy, path: '/achievements'}
   ]
 
   const bottomItems = [

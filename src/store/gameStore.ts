@@ -13,6 +13,7 @@ import { calculateMonthlyExpenses } from '@/utils/expenses'
 import { formatCurrency } from '@/utils'
 import { notify } from '@/store/uiStore'
 import { GameStore } from '@/types/game.types'
+import { useAchievementStore } from './achievementStore'
 
 export const useGameStore = create<GameStore>()(
   persist(
@@ -124,9 +125,10 @@ export const useGameStore = create<GameStore>()(
           ongoingEffects: activeEffects,
         })
 
-        // ✅ События и цели
+        useAchievementStore.getState().checkAchievements(get())
+
         if (Math.random() < 0.8) get().triggerRandomEvent()
-        get().checkGoal() // 🎯 Главная проверка
+        get().checkGoal() 
       },
     }),
     {
