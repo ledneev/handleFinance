@@ -5,6 +5,7 @@ import { notify} from '@/store/uiStore'
 import { UtilsSlice } from '@/types/store.types'
 import { formatCurrency } from '@/utils'
 import { calculateMonthlyExpenses } from '@/utils/expenses'
+import { getFinancialAdvice, Advice } from '@/utils/financialAdvisor'
 
 export const createUtilsSlice: UtilsSlice = (set, get) => ({
   addMoney: (amount) => {
@@ -27,6 +28,10 @@ export const createUtilsSlice: UtilsSlice = (set, get) => ({
       eventLog: [...state.eventLog, `- ${formatCurrency(amount)}`],
     })
     notify.info('Трата', `Потрачено: ${formatCurrency(amount)}`)
+  },
+
+  getAdvice: (): Advice | null => {
+    return getFinancialAdvice(get())
   },
 
   resetGame: () => {

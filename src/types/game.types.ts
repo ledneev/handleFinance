@@ -249,6 +249,7 @@ export type GameActions = {
   purchaseItem: (itemId: string) => void;
   setGameSettings: (settings: GameSettings) => void;
   checkGoal: () => void;
+  getAdvice: () => import('@/utils/financialAdvisor').Advice | null;
 };
 
 export type GameStore = GameState & GameActions;

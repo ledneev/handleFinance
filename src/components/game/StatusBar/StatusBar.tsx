@@ -3,10 +3,11 @@ import { useGameMetrics } from './useGameMetrics';
 import { StatusBarItem } from './StatusBarItem';
 import { ProgressBar } from './ProgressBar';
 import { Button } from '@/components/ui/Button';
-import { Calendar, Wallet, TrendingUp, Briefcase, ChevronRight} from 'lucide-react';
+import { Calendar, Wallet, TrendingUp, Briefcase, ChevronRight, Lightbulb} from 'lucide-react';
 import { formatCurrency } from '@/utils/formatters';
 import { notify } from '@/store/uiStore';
 import { MobileMenuButton } from './MobileMenuButton';
+import { useGameStore } from '@/store/gameStore';
 
 export const StatusBar: React.FC = () => {
   const {
@@ -18,6 +19,7 @@ export const StatusBar: React.FC = () => {
     advanceYear
   } = useGameMetrics();
 
+  const getAdvice = useGameStore(state => state.getAdvice)
   const [isBusy, setIsBusy] = useState(false);
 
   const format = (value: number) => formatCurrency(value, { maximumFractionDigits: 0 });
@@ -39,6 +41,13 @@ export const StatusBar: React.FC = () => {
       setIsBusy(false);
     }
   };
+
+  const handleAdvice = () => {
+    const advice = getAdvice()
+    if (advice) {
+      notify.info(advice.icon + ' ' + advice.title, advice.message, 6000)
+    }
+  }
 
   return (
     <div className={`
@@ -95,8 +104,21 @@ export const StatusBar: React.FC = () => {
         <MobileMenuButton />
       </div>
 
-      {/* Правая часть: кнопка */}
-      <div className="flex items-center gap-3 flex-shrink-0">
+      {/* Правая часть: кнопки */}
+      <div className="flex items-center gap-2 flex-shrink-0">
+        <Button
+          onClick={handleAdvice}
+          className={`
+            bg-amber-100 dark:bg-amber-900/30 hover:bg-amber-200 dark:hover:bg-amber-900/50
+            text-amber-700 dark:text-amber-400 font-medium px-3 py-2 rounded-md
+            flex items-center gap-2 shadow-sm
+            transition-all duration-200
+          `}
+          title="Получить финансовый совет"
+        >
+          <Lightbulb className="w-4 h-4" />
+          <span className="hidden sm:inline">Совет</span>
+        </Button>
         <Button
           onClick={handleAdvance}
           disabled={isBusy}
